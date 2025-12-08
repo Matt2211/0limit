@@ -1,8 +1,7 @@
 <template>
   <section class="py-48">
-    <div
-      class="bg-translucent border-translucent mx-auto flex max-w-6xl flex-col gap-6 rounded-2xl border p-6 md:p-12">
-      <div class="mb-12 flex flex-col">
+    <div class="mx-auto flex max-w-4xl flex-col gap-6 rounded-2xl p-6 md:p-12">
+      <div class="mb-12 flex flex-col text-center">
         <h2 class="mb-3">{{ faq.title }}</h2>
         <p class="lead">
           {{ faq.subTitle }}

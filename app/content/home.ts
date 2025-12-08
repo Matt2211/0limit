@@ -36,7 +36,7 @@ export default {
     },
     {
       image: '/Obsessive-compulsive-disorder.svg',
-      name: 'Obsessive–Compulsive Disorder (OCD)',
+      name: 'Obsessive-Compulsive Disorder (OCD)',
       description:
         'CBT strategies to reduce intrusive thoughts, compulsions, and regain control over daily life.',
     },
