@@ -11,10 +11,10 @@ const props = defineProps<{
 }>()
 
 const baseClasses =
-  ' rounded-xl py-3 px-8  font-jet-brains-mono tracking-widest text-sm transtion-all duration-500 cursor-pointer'
+  ' rounded-full py-3 px-8  font-jet-brains-mono tracking-widest text-sm transtion-all duration-500 cursor-pointer'
 
 const variants = {
-  solid: 'bg-primary text-primary hover:opacity-80 uppercase',
+  solid: 'bg-quaternary text-primary hover:opacity-80 uppercase',
   outline:
     'border border-tertiary text-primary hover:bg-primary-inverted hover:text-primary-inverted',
   basic: 'bg-transparent text-accent',

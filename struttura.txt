@@ -1,0 +1,55 @@
+.
+├── app
+│   ├── app.vue
+│   ├── assets
+│   │   └── css
+│   │       ├── general-sans.css
+│   │       └── main.css
+│   ├── components
+│   │   ├── Button.vue
+│   │   └── structure
+│   │       ├── About.vue
+│   │       ├── Contact.vue
+│   │       ├── Faq.vue
+│   │       ├── Footer.vue
+│   │       ├── Hero.vue
+│   │       ├── HowItWorks.vue
+│   │       ├── Menu.vue
+│   │       └── TherapyAreas.vue
+│   ├── content
+│   │   ├── faq.ts
+│   │   └── home.ts
+│   ├── error.vue
+│   ├── layouts
+│   │   └── default.vue
+│   └── pages
+│       └── index.vue
+├── nuxt.config.ts
+├── package-lock.json
+├── package.json
+├── public
+│   ├── _robots.txt
+│   ├── about-placeholder.jpg
+│   ├── Anxiety-bro.svg
+│   ├── Depression-bro.svg
+│   ├── favicon.ico
+│   ├── fonts
+│   │   └── generalSans
+│   │       ├── GeneralSans-Variable.eot
+│   │       ├── GeneralSans-Variable.ttf
+│   │       ├── GeneralSans-Variable.woff
+│   │       └── GeneralSans-Variable.woff2
+│   ├── Health-anxiety.svg
+│   ├── Obsessive-compulsive-disorder.svg
+│   ├── Panic-attack.svg
+│   ├── Phobias.svg
+│   ├── Social-anxiety-bro.svg
+│   ├── Stress-bro.svg
+│   └── Trauma.svg
+├── README.md
+├── server
+│   └── send-email.ts
+├── struttura.txt
+└── tsconfig.json
+
+13 directories, 40 files

@@ -1,6 +1,7 @@
 <template>
-  <header class="sticky top-0 z-50 bg-white/80 backdrop-blur">
-    <div class="container m-auto flex items-center py-6">
+  <header class="fixed top-8 z-50 w-full">
+    <div
+      class="container m-auto flex items-center rounded-full bg-white/80 px-4 py-3 backdrop-blur-xs">
       <!-- Logo / Brand -->
       <div class="flex-1 text-2xl font-bold">
         <a href="#hero" @click.prevent="handleNavigate('#hero')">
@@ -26,7 +27,7 @@
 
       <!-- Actions -->
       <div class="flex flex-1 items-center justify-end gap-3">
-        <Button variant="basic" @click="handleNavigate('#hero')">
+        <Button variant="basic" @click="consultationModal?.openModal()">
           Free consultation
         </Button>
         <Button @click="handleNavigate('#contacts')"> Book session </Button>
@@ -37,6 +38,8 @@
 
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted } from 'vue'
+import type ConsultationModal from '~/components/ConsultationModal.vue'
+
 import { gsap } from 'gsap'
 import Lenis from 'lenis'
 
@@ -44,6 +47,11 @@ type MenuItem = {
   label: string
   target: string
 }
+
+const consultationModal =
+  inject<Ref<InstanceType<typeof ConsultationModal> | null>>(
+    'consultationModal',
+  )
 
 const menuItems: MenuItem[] = [
   {
@@ -53,6 +61,10 @@ const menuItems: MenuItem[] = [
   {
     label: 'Therapy areas',
     target: '#areas',
+  },
+  {
+    label: 'What to Expect',
+    target: '#session',
   },
   {
     label: 'Contacts',
