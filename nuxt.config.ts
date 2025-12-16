@@ -12,7 +12,7 @@ export default defineNuxtConfig({
   modules: ['lenis/nuxt', '@nuxtjs/seo'],
 
   site: {
-    url: 'http://localhost:3000',
+    url: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
     name: 'Lisa Marini CBT',
     description: 'Lisa Marini CBT',
     defaultLocale: 'en',
