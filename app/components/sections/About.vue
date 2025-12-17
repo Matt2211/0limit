@@ -30,7 +30,7 @@
           <p>
             Following this, I completed a PGDip (Post Graduate Diploma) in CBT
             (Cognitive Behavioural Therapy), and I became a fully accredited
-            Cognitive Behavioural Therapist (MBABCP – Member of the British
+            Cognitive Behavioural Therapist (MBABCP - Member of the British
             Association for Behavioural and Cognitive Psychotherapies),
             specialising in supporting people with common mental health
             difficulties.
