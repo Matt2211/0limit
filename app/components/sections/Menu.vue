@@ -38,7 +38,6 @@
 
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted } from 'vue'
-import type ConsultationModal from '~/components/ConsultationModal.vue'
 
 import { gsap } from 'gsap'
 import Lenis from 'lenis'
@@ -48,10 +47,7 @@ type MenuItem = {
   target: string
 }
 
-const consultationModal =
-  inject<Ref<InstanceType<typeof ConsultationModal> | null>>(
-    'consultationModal',
-  )
+const consultationModal = inject('consultationModal') as Ref<any> | null
 
 const menuItems: MenuItem[] = [
   {

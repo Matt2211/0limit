@@ -7,31 +7,39 @@
 │   │       └── main.css
 │   ├── components
 │   │   ├── Button.vue
-│   │   └── structure
+│   │   ├── ConsultationModal.vue
+│   │   └── sections
 │   │       ├── About.vue
 │   │       ├── Contact.vue
 │   │       ├── Faq.vue
 │   │       ├── Footer.vue
 │   │       ├── Hero.vue
+│   │       ├── HowItWorks-copy.vue
 │   │       ├── HowItWorks.vue
 │   │       ├── Menu.vue
 │   │       └── TherapyAreas.vue
 │   ├── content
+│   │   ├── areas.ts
 │   │   ├── faq.ts
-│   │   └── home.ts
+│   │   ├── home.ts
+│   │   └── howItWorks.ts
 │   ├── error.vue
 │   ├── layouts
 │   │   └── default.vue
-│   └── pages
-│       └── index.vue
+│   ├── pages
+│   │   └── index.vue
+│   └── plugins
+│       └── lenis.client.ts
 ├── nuxt.config.ts
 ├── package-lock.json
 ├── package.json
 ├── public
 │   ├── _robots.txt
 │   ├── about-placeholder.jpg
+│   ├── about-test.png
 │   ├── Anxiety-bro.svg
 │   ├── Depression-bro.svg
+│   ├── FAQs-bro.svg
 │   ├── favicon.ico
 │   ├── fonts
 │   │   └── generalSans
@@ -40,6 +48,7 @@
 │   │       ├── GeneralSans-Variable.woff
 │   │       └── GeneralSans-Variable.woff2
 │   ├── Health-anxiety.svg
+│   ├── Low-self-esteem-bro.svg
 │   ├── Obsessive-compulsive-disorder.svg
 │   ├── Panic-attack.svg
 │   ├── Phobias.svg
@@ -52,4 +61,4 @@
 ├── struttura.txt
 └── tsconfig.json
 
-13 directories, 40 files
+14 directories, 48 files

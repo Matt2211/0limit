@@ -11,6 +11,7 @@
 <script setup lang="ts">
 import { ref, provide } from 'vue'
 import ConsultationModal from '~/components/ConsultationModal.vue'
+import Menu from '~/components/sections/Menu.vue'
 
 const consultationModal = ref<InstanceType<typeof ConsultationModal> | null>(
   null,
