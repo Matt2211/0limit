@@ -14,7 +14,16 @@ export default defineNuxtConfig({
   },
 
   components: {
-    dirs: ['~/components', '~/components/sections'],
+    dirs: [
+      {
+        path: '~/components',
+        extensions: ['vue'],
+      },
+      {
+        path: '~/components/sections',
+        extensions: ['vue'],
+      },
+    ],
   },
 
   css: ['./app/assets/css/main.css'],
