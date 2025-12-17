@@ -15,8 +15,7 @@ const baseClasses =
 
 const variants = {
   solid: 'bg-quaternary text-primary hover:opacity-80 uppercase',
-  outline:
-    'border border-tertiary text-primary hover:bg-primary-inverted hover:text-primary-inverted',
+  outline: 'border border-tertiary text-primary hover:bg-quaternary',
   basic: 'bg-transparent text-accent',
 }
 

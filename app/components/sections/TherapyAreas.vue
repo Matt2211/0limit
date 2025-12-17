@@ -3,7 +3,7 @@
     id="areas"
     class="m-auto flex min-h-screen flex-col items-center justify-center rounded-4xl bg-linear-to-t from-pink-50 to-violet-200 py-12 md:py-32">
     <!-- Section Header -->
-    <div class="mb-16 grid max-w-6xl max-md:px-12 md:grid-cols-3">
+    <div class="mb-16 grid max-w-6xl max-lg:px-12 md:grid-cols-3">
       <h2>{{ areas.title }}</h2>
       <div></div>
       <div class="flex flex-col justify-between">
@@ -73,7 +73,7 @@
     </Swiper>
 
     <div
-      class="mt-16 grid max-w-6xl grid-cols-1 items-center gap-16 max-md:px-12 md:grid-cols-3">
+      class="mt-16 grid max-w-6xl grid-cols-1 items-center gap-16 max-lg:px-12 max-md:px-12 md:grid-cols-3">
       <p class="lead text-tertiary col-span-2">
         {{ areas.contact }}
       </p>

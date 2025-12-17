@@ -27,7 +27,7 @@
 
       <!-- Actions -->
       <div class="flex flex-1 items-center justify-end gap-3">
-        <Button variant="basic" @click="consultationModal?.openModal()">
+        <Button variant="outline" @click="consultationModal?.openModal()">
           Free consultation
         </Button>
         <Button> Book session </Button>

@@ -9,9 +9,9 @@
           <p class="lead">{{ how.subTitle }}</p>
         </div>
 
-        <div>
+        <div class="flex gap-4 max-md:flex-col">
           <Button> Book session </Button>
-          <Button variant="basic" @click="consultationModal?.openModal()">
+          <Button variant="outline" @click="consultationModal?.openModal()">
             Free consultation
           </Button>
         </div>

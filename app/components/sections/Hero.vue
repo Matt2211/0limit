@@ -12,8 +12,14 @@
       </p>
       <div class="mt-6 flex flex-col items-center gap-3">
         <Button>Book your first session</Button>
-        <Button variant="basic">Schedule a free consultation</Button>
+        <Button variant="basic" @click="consultationModal?.openModal()">
+          Schedule a Free Consultation
+        </Button>
       </div>
     </div>
   </section>
 </template>
+
+<script setup lang="ts">
+const consultationModal = inject('consultationModal') as Ref<any> | null
+</script>
