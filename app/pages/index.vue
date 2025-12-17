@@ -1,6 +1,6 @@
 <template>
   <Hero />
-  <!-- <About /> -->
+  <About />
   <TherapyAreas />
   <HowItWorks />
   <Faq />

@@ -13,6 +13,10 @@ export default defineNuxtConfig({
     defaultLocale: 'en',
   },
 
+  components: {
+    dirs: ['~/components', '~/components/sections'],
+  },
+
   css: ['./app/assets/css/main.css'],
 
   vite: {
