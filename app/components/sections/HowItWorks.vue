@@ -19,7 +19,7 @@
 
       <div class="flex aspect-square flex-col justify-center">
         <div
-          class="phase-card absolute m-auto flex aspect-square flex-col rounded-4xl p-12"
+          class="phase-card absolute m-auto flex aspect-square flex-col rounded-4xl p-12 shadow-md"
           :class="phase.bg"
           v-for="(phase, i) in how.phases"
           :key="`left-${i}`">

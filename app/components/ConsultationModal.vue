@@ -5,7 +5,7 @@
       class="fixed inset-0 z-999 flex items-center justify-center backdrop-blur-3xl">
       <div
         ref="modalWrapper"
-        class="modal-wrapper border-primary relative w-full max-w-xl rounded-xl border bg-neutral-50/90 p-6 backdrop-blur-sm md:p-12">
+        class="modal-wrapper border-primary relative w-full max-w-xl rounded-xl border bg-neutral-50/90 p-6 backdrop-blur-sm md:p-8">
         <div
           v-if="view === 'form'"
           class="mb-12 flex items-baseline justify-between">
@@ -23,13 +23,13 @@
         <div v-if="view === 'form'">
           <form class="space-y-6">
             <!-- Personal details -->
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div>
                 <label class="mb-1 block text-sm font-medium">Name *</label>
                 <input
                   type="text"
                   required
-                  class="focus:ring-primary w-full rounded-lg border p-3 focus:ring-2 focus:outline-none" />
+                  class="border-secondary rounded-lg border px-3 py-2 focus:border-violet-400 focus:outline-none" />
               </div>
 
               <div>
@@ -39,17 +39,17 @@
                 <input
                   type="text"
                   required
-                  class="focus:ring-primary w-full rounded-lg border p-3 focus:ring-2 focus:outline-none" />
+                  class="border-secondary rounded-lg border px-3 py-2 focus:border-violet-400 focus:outline-none" />
               </div>
             </div>
 
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div>
                 <label class="mb-1 block text-sm font-medium">Email *</label>
                 <input
                   type="email"
                   required
-                  class="focus:ring-primary w-full rounded-lg border p-3 focus:ring-2 focus:outline-none" />
+                  class="border-secondary rounded-lg border px-3 py-2 focus:border-violet-400 focus:outline-none" />
               </div>
 
               <div>
@@ -57,7 +57,7 @@
                 <input
                   type="tel"
                   required
-                  class="focus:ring-primary w-full rounded-lg border p-3 focus:ring-2 focus:outline-none" />
+                  class="border-secondary rounded-lg border px-3 py-2 focus:border-violet-400 focus:outline-none" />
               </div>
             </div>
 
@@ -68,13 +68,27 @@
               <div>
                 <p class="mb-2 text-sm">Monday</p>
                 <div class="flex gap-4">
-                  <label class="flex items-center gap-2">
-                    <input type="radio" name="monday" required />
-                    <span>09:00 – 11:00</span>
+                  <label class="flex cursor-pointer items-center gap-2">
+                    <input
+                      type="radio"
+                      name="monday"
+                      required
+                      class="peer absolute h-0 w-0 opacity-0" />
+                    <span
+                      class="border-tertiary rounded-md border px-3 py-1 transition-colors duration-200 peer-checked:border-violet-400 peer-checked:bg-violet-600/10 peer-checked:text-violet-400 max-md:w-full max-md:text-center"
+                      >09:00 - 11:00</span
+                    >
                   </label>
-                  <label class="flex items-center gap-2">
-                    <input type="radio" name="monday" required />
-                    <span>14:00 – 16:00</span>
+                  <label class="flex cursor-pointer items-center gap-2">
+                    <input
+                      type="radio"
+                      name="monday"
+                      required
+                      class="peer absolute h-0 w-0 opacity-0" />
+                    <span
+                      class="border-tertiary rounded-md border px-3 py-1 transition-colors duration-200 peer-checked:border-violet-400 peer-checked:bg-violet-600/10 peer-checked:text-violet-400 max-md:w-full max-md:text-center"
+                      >14:00 - 16:00</span
+                    >
                   </label>
                 </div>
               </div>
@@ -82,13 +96,27 @@
               <div>
                 <p class="mb-2 text-sm">Friday</p>
                 <div class="flex gap-4">
-                  <label class="flex items-center gap-2">
-                    <input type="radio" name="friday" required />
-                    <span>10:00 – 12:00</span>
+                  <label class="flex cursor-pointer items-center gap-2">
+                    <input
+                      type="radio"
+                      name="friday"
+                      required
+                      class="peer absolute h-0 w-0 opacity-0" />
+                    <span
+                      class="border-tertiary rounded-md border px-3 py-1 transition-colors duration-200 peer-checked:border-violet-400 peer-checked:bg-violet-600/10 peer-checked:text-violet-400 max-md:w-full max-md:text-center"
+                      >09:00 - 11:00</span
+                    >
                   </label>
-                  <label class="flex items-center gap-2">
-                    <input type="radio" name="friday" required />
-                    <span>15:00 – 17:00</span>
+                  <label class="flex cursor-pointer items-center gap-2">
+                    <input
+                      type="radio"
+                      name="friday"
+                      required
+                      class="peer absolute h-0 w-0 opacity-0" />
+                    <span
+                      class="border-tertiary rounded-md border px-3 py-1 transition-colors duration-200 peer-checked:border-violet-400 peer-checked:bg-violet-600/10 peer-checked:text-violet-400 max-md:w-full max-md:text-center"
+                      >14:00 - 16:00</span
+                    >
                   </label>
                 </div>
               </div>

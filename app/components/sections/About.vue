@@ -1,8 +1,9 @@
 <template>
   <section id="about" class="py-32" aria-labelledby="about-title">
     <div
-      class="container m-auto flex items-center justify-center rounded-4xl bg-[url(/ffflux.svg)] bg-cover py-12">
-      <div class="m-auto grid max-w-6xl grid-cols-8 grid-rows-8 gap-8">
+      class="container m-auto flex items-center justify-center rounded-4xl bg-[url(/ffflux.svg)] bg-cover p-6 lg:p-12">
+      <div
+        class="m-auto grid max-w-6xl grid-cols-8 grid-rows-8 gap-8 max-lg:grid-cols-1">
         <div class="grid-col-1 col-span-4 row-span-8 grid gap-8">
           <div class="rounded-4xl pt-12 backdrop-blur-xs">
             <h2>Lisa marini</h2>

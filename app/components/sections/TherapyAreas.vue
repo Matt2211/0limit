@@ -10,7 +10,7 @@
         <p class="lead text-secondary">
           {{ areas.subTitle }}
         </p>
-        <div class="ml-auto flex items-center gap-4 max-md:hidden">
+        <div class="ml-auto flex items-center gap-4">
           <CircleArrowLeft
             :size="60"
             :stroke-width="1"
@@ -38,13 +38,13 @@
         <SwiperSlide
           v-for="(area, i) in areas.areas"
           :key="i"
-          class="mr-20 h-full w-[400px]!">
+          class="mr-20 h-full w-[400px]! py-4 max-lg:px-12 max-md:w-[300px]!">
           <div
-            class="group flex w-[400px] flex-col overflow-hidden rounded-4xl bg-white/50 p-2 backdrop-blur-xs transition duration-500 hover:bg-violet-50">
+            class="group flex w-[400px] flex-col overflow-hidden rounded-4xl bg-linear-to-b from-pink-50 to-violet-200 p-2 shadow-md max-md:w-[300px]">
             <img
               :src="area.image"
               :alt="area.name"
-              class="m-auto h-60 w-full rounded-t-4xl bg-neutral-100 object-cover transition-transform duration-500 group-hover:scale-105" />
+              class="m-auto h-60 w-full rounded-t-4xl object-cover transition-transform duration-500 group-hover:scale-105" />
 
             <div class="mt-6 flex flex-1 flex-col p-4">
               <div class="flex items-center">
