@@ -11,7 +11,8 @@
         >
       </p>
       <div class="mt-6 flex flex-col items-center gap-3">
-        <Button>Book your first session</Button>
+        <Button @click="navigateTo('/booking')">Book your first session</Button>
+
         <!-- <Button variant="basic" @click="consultationModal?.openModal()">
           Schedule a Free Consultation
         </Button> -->

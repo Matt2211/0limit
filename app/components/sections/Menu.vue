@@ -33,7 +33,7 @@
         <Button variant="outline" @click="consultationModal?.openModal()">
           Free consultation
         </Button>
-        <Button> Book session </Button>
+        <Button @click="navigateTo('/booking')">Book session</Button>
       </div>
     </div>
   </header>
