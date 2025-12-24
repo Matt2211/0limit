@@ -2,18 +2,18 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
-  devtools: { enabled: true },
+  devtools: { enabled: false },
 
   modules: ['lenis/nuxt', '@nuxtjs/seo'],
 
   site: {
-    url: 'https://lisamarinicbt.com',
-    name: 'Lisa Marini CBT',
-    description: 'Lisa Marini — CBT Therapist for Anxiety, Trauma & Wellbeing',
+    url: 'https://studio3266.com',
+    name: 'STUDIO3266',
+    description: 'A curated hair experience set in a private studio space',
     defaultLocale: 'en',
   },
 
-  css: ['./app/assets/css/main.css'],
+  css: ['./app/assets/css/main.css', './app/assets/css/jet-brains-mono.css'],
 
   vite: {
     plugins: [tailwindcss()],
@@ -21,12 +21,11 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      titleTemplate: '%s | Lisa Marini CBT',
+      titleTemplate: '%s | STUDIO3266',
       meta: [
         {
           name: 'description',
-          content:
-            'Lisa Marini — CBT Therapist for Anxiety, Trauma & Wellbeing.',
+          content: 'A curated hair experience set in a private studio space',
         },
       ],
     },

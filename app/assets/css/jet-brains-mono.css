@@ -1,0 +1,18 @@
+/**
+* This is a variable font
+* You can control variable axes as shown below:
+* font-variation-settings: wght 400.0;
+*
+* available axes:
+'wght' (range from 100.0 to 800.0
+*/
+@font-face {
+  font-family: 'JetBrainsMono-Variable';
+  src:
+    url('/fonts/jetBrains/JetBrainsMono-Variable.woff2') format('woff2'),
+    url('/fonts/jetBrains/JetBrainsMono-Variable.woff') format('woff'),
+    url('/fonts/jetBrains/JetBrainsMono-Variable.ttf') format('truetype');
+  font-weight: 100 800;
+  font-display: swap;
+  font-style: normal;
+}

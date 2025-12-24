@@ -1,6 +1,6 @@
 <template>
-  <div class="m-auto bg-red-300">
-    <h1>book your session</h1>
+  <section
+    class="m-auto min-h-screen bg-[url(/ffflux.svg)] bg-cover bg-no-repeat backdrop-blur-3xl">
     <slot />
-  </div>
+  </section>
 </template>

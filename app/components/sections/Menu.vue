@@ -1,117 +1,91 @@
 <template>
   <header class="fixed top-2 left-1/2 z-50 w-full -translate-x-1/2">
-    <div
-      class="container m-auto flex items-center rounded-full border border-white bg-white/70 p-2 backdrop-blur-sm">
-      <!-- Logo / Brand -->
-      <div class="flex-1 text-2xl font-bold">
-        <a
-          href="#hero"
-          @click.prevent="handleNavigate('#hero')"
-          class="flex items-center gap-x-3 text-xl">
-          <img src="/logo.svg" alt="logo" /> Therapy4you
-        </a>
-      </div>
+    <div class="m-auto flex items-center px-12">
+      <!-- Logo -->
+      <NuxtLink to="/" class="logo">
+        <img src="/logo.png" class="h-13" alt="STUDIO3266 logo" />
+      </NuxtLink>
 
       <!-- Main navigation -->
       <nav class="flex-1" aria-label="Main navigation">
-        <ul class="m-auto flex items-center justify-center space-x-6">
-          <li
-            v-for="item in menuItems"
-            :key="item.label"
-            class="cursor-pointer">
-            <div
-              class="text-sm font-medium text-gray-700 transition hover:text-gray-900"
-              @click="handleNavigate(item.target)">
+        <ul
+          class="font-jet-brains-mono m-auto flex items-center justify-end space-x-20">
+          <li>
+            <button
+              @click="toggleTheme"
+              aria-label="Toggle theme"
+              class="border-primary relative h-4 w-10 cursor-pointer border transition-colors duration-300">
+              <span
+                class="bg-inverted absolute top-0.5 left-0.5 h-2.5 w-4 transition-transform duration-300"
+                :class="isDark ? 'translate-x-4.5' : 'translate-x-0'" />
+            </button>
+          </li>
+          <li v-for="item in menuItems" :key="item.label">
+            <NuxtLink
+              :to="item.to"
+              class="text-primary relative pb-1 text-sm font-medium tracking-widest transition-opacity hover:opacity-70"
+              active-class="after:absolute after:left-0 after:-bottom-1 after:h-px after:w-full after:bg-current">
               {{ item.label }}
-            </div>
+            </NuxtLink>
+          </li>
+          <li>
+            <a
+              target="_blank"
+              href="https://www.instagram.com/studio.3266/"
+              class="text-primary relative pb-1 text-sm font-medium tracking-widest transition-opacity hover:opacity-70"
+              active-class="after:absolute after:left-0 after:-bottom-1 after:h-px after:w-full after:bg-current">
+              INSTAGRAM
+            </a>
+          </li>
+
+          <li class="flex items-center gap-x-4">
+            <Button
+              href="https://www.fresha.com/a/studio-3266-manchester-ducie-house-37-ducie-street-uugc92k7/all-offer?menu=true&pId=2559796&utm_content=link_in_bio&utm_medium=social&utm_source=ig"
+              target="_blank"
+              >BOOK NOW</Button
+            >
           </li>
         </ul>
       </nav>
-
-      <!-- Actions -->
-      <div class="flex flex-1 items-center justify-end gap-3">
-        <Button variant="outline" @click="consultationModal?.openModal()">
-          Free consultation
-        </Button>
-        <Button @click="navigateTo('/booking')">Book session</Button>
-      </div>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 
-import { gsap } from 'gsap'
-import Lenis from 'lenis'
+const isDark = ref(false)
+const THEME_KEY = 'theme'
+
+function applyTheme(dark: boolean) {
+  document.documentElement.classList.toggle('dark', dark)
+}
+
+function initTheme() {
+  if (!process.client) return
+
+  const saved = localStorage.getItem(THEME_KEY)
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+
+  isDark.value = saved ? saved === 'dark' : prefersDark
+  applyTheme(isDark.value)
+}
+
+function toggleTheme() {
+  isDark.value = !isDark.value
+  applyTheme(isDark.value)
+  localStorage.setItem(THEME_KEY, isDark.value ? 'dark' : 'light')
+}
+
+onMounted(initTheme)
 
 type MenuItem = {
   label: string
-  target: string
+  to: string
 }
-
-const consultationModal = inject('consultationModal') as Ref<any> | null
 
 const menuItems: MenuItem[] = [
-  {
-    label: 'Who I am',
-    target: '#about',
-  },
-  {
-    label: 'Therapy areas',
-    target: '#areas',
-  },
-  {
-    label: 'What to Expect',
-    target: '#session',
-  },
-  // {
-  //   label: 'Contacts',
-  //   target: '#contacts',
-  // },
+  { label: 'SERVICES', to: '/services' },
+  { label: 'TEAM', to: '/team' },
 ]
-
-let lenis: InstanceType<typeof Lenis> | null = null
-
-function raf(time: number) {
-  if (!lenis) return
-  // gsap.ticker gives time in seconds, Lenis expects ms
-  lenis.raf(time * 1000)
-}
-
-onMounted(async () => {
-  if (!process.client) return
-
-  const { default: Lenis } = await import('lenis')
-  const { gsap } = await import('gsap')
-
-  lenis = new Lenis({ smoothWheel: true })
-  gsap.ticker.add(raf)
-})
-
-onBeforeUnmount(() => {
-  gsap.ticker.remove(raf)
-  lenis?.destroy()
-  lenis = null
-})
-
-function handleNavigate(target: string) {
-  if (typeof window === 'undefined') return
-
-  const section = document.querySelector<HTMLElement>(target)
-  if (!section) return
-
-  if (lenis) {
-    lenis.scrollTo(section, {
-      duration: 1.2,
-      easing: (t: number) => 1 - Math.pow(1 - t, 3), // easeOutCubic
-    })
-  } else {
-    // Fallback if Lenis is not available
-    window.scrollTo({
-      top: section.offsetTop,
-      behavior: 'smooth',
-    })
-  }
-}
 </script>

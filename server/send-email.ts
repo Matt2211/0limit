@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     await resend.emails.send({
-      from: 'Lisa Marini - Contact <hello@matteofelicidesign.com>', // o verified sender
+      from: 'Dan - Contact <hello@matteofelicidesign.com>', // o verified sender
       to: 'matteofelicidesign@gmail.com',
       subject: `New message from ${body.name}`,
       html: `
