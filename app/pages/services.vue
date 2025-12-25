@@ -1,9 +1,10 @@
 <template>
   <section
     class="page flex min-h-screen items-center justify-center overflow-hidden">
-    <div class="reveal grid w-6xl grid-cols-1 gap-12 md:grid-cols-2">
+    <div
+      class="reveal grid w-full grid-cols-1 max-lg:px-4 max-md:py-32 md:max-w-6xl md:grid-cols-2 md:gap-12">
       <!-- LEFT VISUAL PLACEHOLDER -->
-      <div class="relative aspect-square w-full overflow-hidden">
+      <div class="relative aspect-square w-full overflow-hidden max-md:hidden">
         <img
           ref="imageEl"
           :src="activeImage"
@@ -21,7 +22,7 @@
           <button
             class="flex w-full cursor-pointer items-center justify-between text-left"
             @click="toggle(index)">
-            <h2 class="tracking-widest uppercase">
+            <h2 class="uppercase lg:tracking-widest">
               {{ String(index + 1).padStart(2, '0') }}. {{ service.name }}
             </h2>
 
@@ -33,6 +34,14 @@
 
           <!-- CONTENT -->
           <div v-if="openIndex === index && service.description" class="mt-3">
+            <div
+              class="relative mb-6 aspect-square w-full overflow-hidden md:hidden">
+              <img
+                ref="imageEl"
+                :src="activeImage"
+                alt=""
+                class="absolute inset-0 h-full w-full object-cover" />
+            </div>
             <p>{{ service.description }}</p>
           </div>
         </div>

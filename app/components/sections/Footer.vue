@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fixed bottom-0 grid w-full grid-cols-3 items-end justify-between px-12 py-4">
+    class="bottom-0 grid w-full grid-cols-3 items-end justify-between px-4 max-md:pb-20 md:fixed md:py-4 lg:px-12">
     <div class="flex flex-col">
       <!-- <a
         target="_blank"

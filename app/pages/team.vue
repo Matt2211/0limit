@@ -1,7 +1,8 @@
 <template>
   <section
     class="page flex min-h-screen items-center justify-center overflow-hidden">
-    <div class="reveal grid w-6xl grid-cols-1 gap-24 md:grid-cols-2">
+    <div
+      class="reveal grid w-6xl grid-cols-1 gap-24 max-lg:px-4 max-md:py-32 md:grid-cols-2">
       <div v-for="(member, index) in team.team" :key="member.name">
         <img :src="member.img" class="mb-12 w-[250px]" :alt="member.name" />
         <h2 class="mb-2 text-4xl">{{ member.name }}</h2>

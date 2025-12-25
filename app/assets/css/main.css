@@ -104,13 +104,13 @@ html {
    =================================== */
 @layer components {
   h1 {
-    @apply font-jet-brains-mono text-[190px] font-medium;
+    @apply font-jet-brains-mono text-6xl font-medium md:text-[100px] lg:text-[190px];
     line-height: 120%;
     color: var(--color-text-primary);
   }
 
   h2 {
-    @apply font-jet-brains-mono text-2xl font-semibold;
+    @apply font-jet-brains-mono text-lg font-semibold md:text-2xl;
     line-height: 120%;
     color: var(--color-text-primary);
   }
@@ -168,6 +168,5 @@ html {
   width: 80vw;
   max-width: 1200px;
   height: auto;
-
   will-change: transform;
 }

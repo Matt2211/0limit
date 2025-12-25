@@ -1,5 +1,5 @@
 <template>
-  <section class="relative h-[220vh]">
+  <section class="relative h-[350vh]">
     <div class="sticky top-0 flex h-screen items-center justify-center">
       <!-- Text -->
       <div class="relative z-10 text-center">
@@ -8,7 +8,7 @@
         </div>
 
         <div class="mask-line mt-4">
-          <p class="lead">
+          <p class="lg:lead subhead text-base md:text-lg">
             A curated hair experience set in a private studio space
           </p>
         </div>
@@ -60,7 +60,7 @@ onMounted(async () => {
   )
 
   introTl.fromTo(
-    '.lead',
+    '.subhead',
     { yPercent: 100 },
     {
       yPercent: 0,
@@ -85,7 +85,7 @@ onMounted(async () => {
 
   // TEXT ZOOM OUT
   scrollTl.to(
-    ['.hero-title', '.lead'],
+    ['.hero-title', '.subhead'],
     {
       scale: 0.92,
       opacity: 0.1,
