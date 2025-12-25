@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bottom-0 grid w-full grid-cols-3 items-end justify-between px-4 max-md:pb-20 md:fixed md:py-4 lg:px-12">
+    class="bottom-0 grid w-full grid-cols-2 items-end justify-between px-4 max-md:pb-20 md:fixed md:py-4 lg:px-12">
     <div class="flex flex-col">
       <!-- <a
         target="_blank"
@@ -20,8 +20,6 @@
         </h5>
       </a>
     </div>
-
-    <div class="text-center"></div>
 
     <div class="flex items-center justify-end gap-x-2 text-right">
       <h6>Site by</h6>
