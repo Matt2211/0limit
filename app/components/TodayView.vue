@@ -124,147 +124,8 @@ const glassIndexes = computed(() =>
 <template>
   <section class="grid gap-4">
     <div class="rounded-2xl border border-neutral-800 bg-neutral-900/40 p-4">
-      <div class="mb-3">
-        <h2 class="text-lg font-semibold text-neutral-100">Today</h2>
-        <p class="text-sm text-neutral-400">Date: {{ today }}</p>
-      </div>
-
-      <!-- Next routine block -->
-      <div
-        v-if="nextRoutine"
-        class="mb-4 rounded-lg border border-neutral-800 bg-neutral-950/30 p-3">
-        <div class="flex items-center justify-between">
-          <p class="text-xs tracking-wide text-neutral-400 uppercase">
-            Next routine block
-          </p>
-          <span
-            v-if="nextRoutine.isTomorrow"
-            class="text-[11px] font-semibold text-neutral-300">
-            tomorrow
-          </span>
-        </div>
-
-        <div class="mt-2">
-          <p class="text-sm font-semibold text-neutral-100">
-            {{ nextRoutine.time }}
-          </p>
-          <p class="text-sm text-neutral-300">{{ nextRoutine.text }}</p>
-        </div>
-      </div>
-
-      <!-- Morning inputs + trackers -->
-      <div class="grid gap-4 sm:grid-cols-2">
-        <!-- Weight -->
-        <div>
-          <p class="text-xs tracking-wide text-neutral-400 uppercase">
-            Weight (kg)
-          </p>
-          <div class="mt-2 flex items-center gap-2">
-            <input
-              type="number"
-              step="0.1"
-              inputmode="decimal"
-              class="w-full rounded-lg border border-neutral-700 bg-neutral-950/40 px-3 py-2 text-sm text-neutral-100 outline-none"
-              :value="props.weight ?? ''"
-              placeholder="e.g. 88.0"
-              @input="
-                emit('updateWeight', ($event.target as HTMLInputElement).value)
-              " />
-          </div>
-        </div>
-
-        <!-- Sleep -->
-        <div>
-          <p class="text-xs tracking-wide text-neutral-400 uppercase">
-            Sleep (hours)
-          </p>
-          <div class="mt-2 flex items-center gap-2">
-            <input
-              type="number"
-              step="0.1"
-              inputmode="decimal"
-              class="w-full rounded-lg border border-neutral-700 bg-neutral-950/40 px-3 py-2 text-sm text-neutral-100 outline-none"
-              :value="props.sleepHours ?? ''"
-              placeholder="e.g. 6.5"
-              @input="
-                emit(
-                  'updateSleepHours',
-                  ($event.target as HTMLInputElement).value,
-                )
-              " />
-          </div>
-        </div>
-
-        <!-- Energy -->
-        <div>
-          <p class="text-xs tracking-wide text-neutral-400 uppercase">Energy</p>
-          <div class="mt-2 flex items-center gap-2">
-            <button
-              v-for="opt in energyOptions"
-              :key="opt.level"
-              type="button"
-              class="cursor-pointer rounded-lg border px-2 py-2 transition"
-              :class="
-                props.energy === opt.level
-                  ? 'border-neutral-400 bg-neutral-100/10'
-                  : 'border-neutral-700 bg-neutral-950/40 hover:bg-neutral-900/40'
-              "
-              :title="opt.label"
-              @click="selectEnergy(opt.level)">
-              <component
-                :is="opt.Icon"
-                class="h-5 w-5"
-                :class="
-                  props.energy === opt.level
-                    ? energyColor(opt.level)
-                    : 'text-neutral-400'
-                " />
-            </button>
-          </div>
-          <p class="mt-2 text-xs text-neutral-400">
-            Click to select (click again to clear).
-          </p>
-        </div>
-
-        <!-- Water -->
-        <div>
-          <div class="flex items-end justify-between">
-            <p class="text-xs tracking-wide text-neutral-400 uppercase">
-              Water
-            </p>
-            <p class="text-xs font-semibold text-neutral-200">
-              {{ props.waterGlasses }}/{{ props.waterTarget }}
-            </p>
-          </div>
-
-          <div class="mt-2 flex flex-wrap gap-2">
-            <button
-              v-for="i in glassIndexes"
-              :key="i"
-              type="button"
-              class="cursor-pointer rounded-lg border px-2 py-2 transition"
-              :class="
-                i < props.waterGlasses
-                  ? 'border-neutral-400 bg-neutral-100/10'
-                  : 'border-neutral-700 bg-neutral-950/40 hover:bg-neutral-900/40'
-              "
-              :title="`Glass ${i + 1}`"
-              @click="emit('toggleWaterGlass', i)">
-              <GlassWater
-                class="h-5 w-5"
-                :class="
-                  i < props.waterGlasses ? 'text-sky-300' : 'text-neutral-600'
-                " />
-            </button>
-          </div>
-
-          <p class="mt-2 text-xs text-neutral-400">Target: 3.5L (7×500ml).</p>
-        </div>
-      </div>
-
-      <!-- Next action -->
-      <div
-        class="mt-4 rounded-lg border border-neutral-800 bg-neutral-950/30 p-3">
+      <!-- Next action (priority) -->
+      <div class="rounded-lg border border-neutral-800 bg-neutral-950/30 p-3">
         <div class="flex items-center justify-between gap-3">
           <p class="text-xs tracking-wide text-neutral-400 uppercase">
             Next action
@@ -297,7 +158,7 @@ const glassIndexes = computed(() =>
             :key="nextItem.id"
             type="checkbox"
             class="h-5 w-5 accent-neutral-100"
-            :checked="!!props.checkedMap[nextItem.id]"
+            :checked="!!checkedMap[nextItem.id]"
             @change="toggleNext" />
         </div>
 
@@ -334,6 +195,143 @@ const glassIndexes = computed(() =>
               :checked="!!checkedMap[item.id]"
               @change="emit('toggle', item.id)" />
           </label>
+        </div>
+      </div>
+
+      <!-- Next routine block (compact) -->
+      <div
+        v-if="nextRoutine"
+        class="mt-3 rounded-lg border border-neutral-800 bg-neutral-950/30 p-3">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <p class="text-xs tracking-wide text-neutral-400 uppercase">
+              Upcoming
+            </p>
+
+            <p class="mt-1 text-sm">
+              <span class="font-semibold text-neutral-100">
+                {{ nextRoutine.time }}
+              </span>
+              <span class="text-neutral-500"> • </span>
+              <span class="text-neutral-300">{{ nextRoutine.text }}</span>
+            </p>
+          </div>
+
+          <span
+            v-if="nextRoutine.isTomorrow"
+            class="shrink-0 rounded-full border border-neutral-800 bg-neutral-950/40 px-2 py-1 text-[11px] font-semibold text-neutral-300">
+            tomorrow
+          </span>
+        </div>
+      </div>
+
+      <!-- Morning inputs + trackers -->
+      <div class="mt-4 grid gap-4 sm:grid-cols-2">
+        <!-- Weight -->
+        <div>
+          <p class="text-xs tracking-wide text-neutral-400 uppercase">
+            Weight (kg)
+          </p>
+          <div class="mt-2 flex items-center gap-2">
+            <input
+              type="number"
+              step="0.1"
+              inputmode="decimal"
+              class="w-full rounded-lg border border-neutral-700 bg-neutral-950/40 px-3 py-2 text-sm text-neutral-100 outline-none"
+              :value="weight ?? ''"
+              placeholder="e.g. 88.0"
+              @input="
+                emit('updateWeight', ($event.target as HTMLInputElement).value)
+              " />
+          </div>
+        </div>
+
+        <!-- Sleep -->
+        <div>
+          <p class="text-xs tracking-wide text-neutral-400 uppercase">
+            Sleep (hours)
+          </p>
+          <div class="mt-2 flex items-center gap-2">
+            <input
+              type="number"
+              step="0.1"
+              inputmode="decimal"
+              class="w-full rounded-lg border border-neutral-700 bg-neutral-950/40 px-3 py-2 text-sm text-neutral-100 outline-none"
+              :value="sleepHours ?? ''"
+              placeholder="e.g. 6.5"
+              @input="
+                emit(
+                  'updateSleepHours',
+                  ($event.target as HTMLInputElement).value,
+                )
+              " />
+          </div>
+        </div>
+
+        <!-- Energy -->
+        <div>
+          <p class="text-xs tracking-wide text-neutral-400 uppercase">Energy</p>
+          <div class="mt-2 flex items-center gap-2">
+            <button
+              v-for="opt in energyOptions"
+              :key="opt.level"
+              type="button"
+              class="cursor-pointer rounded-lg border px-2 py-2 transition"
+              :class="
+                energy === opt.level
+                  ? 'border-neutral-400 bg-neutral-100/10'
+                  : 'border-neutral-700 bg-neutral-950/40 hover:bg-neutral-900/40'
+              "
+              :title="opt.label"
+              @click="selectEnergy(opt.level)">
+              <component
+                :is="opt.Icon"
+                class="h-5 w-5"
+                :class="
+                  energy === opt.level
+                    ? energyColor(opt.level)
+                    : 'text-neutral-400'
+                " />
+            </button>
+          </div>
+          <p class="mt-2 text-xs text-neutral-400">
+            Click to select (click again to clear).
+          </p>
+        </div>
+
+        <!-- Water -->
+        <div>
+          <div class="flex items-end justify-between">
+            <p class="text-xs tracking-wide text-neutral-400 uppercase">
+              Water
+            </p>
+            <p class="text-xs font-semibold text-neutral-200">
+              {{ waterGlasses }}/{{ waterTarget }}
+            </p>
+          </div>
+
+          <div class="mt-2 flex flex-wrap gap-2">
+            <button
+              v-for="i in glassIndexes"
+              :key="i"
+              type="button"
+              class="cursor-pointer rounded-lg border px-2 py-2 transition"
+              :class="
+                i < waterGlasses
+                  ? 'border-neutral-400 bg-neutral-100/10'
+                  : 'border-neutral-700 bg-neutral-950/40 hover:bg-neutral-900/40'
+              "
+              :title="`Glass ${i + 1}`"
+              @click="emit('toggleWaterGlass', i)">
+              <GlassWater
+                class="h-5 w-5"
+                :class="
+                  i < waterGlasses ? 'text-sky-300' : 'text-neutral-600'
+                " />
+            </button>
+          </div>
+
+          <p class="mt-2 text-xs text-neutral-400">Target: 3.5L (7×500ml).</p>
         </div>
       </div>
     </div>

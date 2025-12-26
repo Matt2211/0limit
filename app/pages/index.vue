@@ -208,27 +208,13 @@ function onProfileSave(payload: {
           @complete="completeSetup" />
 
         <template v-else>
-          <header v-if="tab === 'today'" class="mb-6 flex flex-col gap-3">
+          <header v-if="tab === 'today'" class="mb-4 flex flex-col gap-3">
             <div>
               <h1
                 class="mt-1 text-2xl leading-snug font-semibold text-neutral-100">
                 “{{ dailyQuote }}”
               </h1>
             </div>
-
-            <WeightTrendWidget
-              v-if="weightTrend"
-              :start="weightTrend.start"
-              :latest="weightTrend.latest"
-              :delta="weightTrend.delta"
-              :status="weightTrend.status"
-              :daily="data.daily" />
-
-            <GoalWeeksTracker
-              class="mt-3"
-              :today="today"
-              :goal="data.goal"
-              @goProgress="goToProgress" />
 
             <div
               class="mt-3 w-full rounded-2xl border border-neutral-800 bg-neutral-900/30 p-3">
@@ -257,23 +243,39 @@ function onProfileSave(payload: {
             </div>
           </header>
 
-          <TodayView
-            v-if="tab === 'today'"
-            :key="'today-' + viewTick"
-            :today="today"
-            :schedule="data.routine.schedule"
-            :items="todayChecklist"
-            :checkedMap="todayEntry.checks"
-            :weight="todayEntry.weight"
-            :sleepHours="todayEntry.sleepHours"
-            :energy="todayEntry.energy"
-            :waterGlasses="todayEntry.waterGlasses"
-            :waterTarget="waterTarget"
-            @toggle="toggleDaily"
-            @updateWeight="onUpdateWeight"
-            @updateSleepHours="onUpdateSleepHours"
-            @setEnergy="onSetEnergy"
-            @toggleWaterGlass="toggleDailyWaterGlass" />
+          <template v-if="tab === 'today'">
+            <TodayView
+              :key="'today-' + viewTick"
+              :today="today"
+              :schedule="data.routine.schedule"
+              :items="todayChecklist"
+              :checkedMap="todayEntry.checks"
+              :weight="todayEntry.weight"
+              :sleepHours="todayEntry.sleepHours"
+              :energy="todayEntry.energy"
+              :waterGlasses="todayEntry.waterGlasses"
+              :waterTarget="waterTarget"
+              @toggle="toggleDaily"
+              @updateWeight="onUpdateWeight"
+              @updateSleepHours="onUpdateSleepHours"
+              @setEnergy="onSetEnergy"
+              @toggleWaterGlass="toggleDailyWaterGlass" />
+
+            <div class="mt-4 grid gap-4">
+              <WeightTrendWidget
+                v-if="weightTrend"
+                :start="weightTrend.start"
+                :latest="weightTrend.latest"
+                :delta="weightTrend.delta"
+                :status="weightTrend.status"
+                :daily="data.daily" />
+
+              <GoalWeeksTracker
+                :today="today"
+                :goal="data.goal"
+                @goProgress="goToProgress" />
+            </div>
+          </template>
 
           <ProgressView
             v-else-if="tab === 'progress'"
