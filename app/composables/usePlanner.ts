@@ -20,6 +20,54 @@ type Goal = {
   weeks: number | null
 }
 
+/** ---------------- Workout ---------------- */
+export type WorkoutKey = 'A' | 'B' | 'C' | 'REST'
+
+export type WorkoutExerciseTemplate = {
+  id: string
+  name: string
+  restSeconds: number | null
+}
+
+/**
+ * NOTE:
+ * - `items` stays for backwards-compat with current UI.
+ * - New UI should use `exercises`.
+ */
+export type WorkoutTemplate = {
+  title: string
+  subtitle: string
+  items: string[] // legacy list (kept in sync with exercises)
+  exercises: WorkoutExerciseTemplate[]
+}
+
+export type WorkoutTemplates = Record<WorkoutKey, WorkoutTemplate>
+
+export type WorkoutExerciseLog = {
+  done: boolean
+  weight: number | null
+  reps: number | null
+}
+
+export type WorkoutDayLog = {
+  key: WorkoutKey
+  exercises: Record<string, WorkoutExerciseLog> // exerciseId -> log
+}
+
+type WorkoutState = {
+  templates: WorkoutTemplates
+
+  /**
+   * Legacy: YYYY-MM-DD -> completed
+   * (We keep it for now, but new completion can be derived from logs.)
+   */
+  done: Record<string, boolean>
+
+  /** New: YYYY-MM-DD -> per-exercise logs */
+  logs: Record<string, WorkoutDayLog>
+}
+/** ---------------------------------------- */
+
 type GroceryItem = {
   id: string
   name: string
@@ -39,6 +87,7 @@ type PlannerData = {
   setupCompleted: boolean
   profile: Profile
   goal: Goal
+  workout: WorkoutState
   mealPlan: { title: string; items: string[]; grocery: GroceryItem[] }
   routine: { schedule: RoutineRow[]; checklist: CheckItem[] }
   daily: Record<string, DailyEntry>
@@ -54,6 +103,85 @@ function isoDate(d = new Date()) {
 
 function makeId() {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`
+}
+
+function workoutForDate(dateKey: string): WorkoutKey {
+  const dt = new Date(`${dateKey}T12:00:00`)
+  const day = dt.getDay() // 0 Sun ... 6 Sat
+  if (day === 1) return 'A' // Mon
+  if (day === 3) return 'B' // Wed
+  if (day === 5) return 'C' // Fri
+  return 'REST'
+}
+
+function defaultWorkoutTemplates(): WorkoutTemplates {
+  // Defaults: restSeconds are “sane starting points”. You can change later in UI.
+  const mk = (name: string, restSeconds: number | null) => ({
+    id: makeId(),
+    name,
+    restSeconds,
+  })
+
+  const Aex = [
+    mk('Bench press — 4×6–8', 120),
+    mk('Row (machine or DB) — 4×8–10', 120),
+    mk('Incline DB press — 3×8–10', 90),
+    mk('Lat pulldown — 3×10–12', 90),
+    mk('Lateral raises — 3×12–15', 75),
+    mk('Triceps + Biceps — 2–3 sets each', 60),
+  ]
+
+  const Bex = [
+    mk('Squat or Leg press — 4×6–10', 150),
+    mk('Romanian deadlift — 4×6–10', 150),
+    mk('Leg curl — 3×10–12', 90),
+    mk('Calf raises — 4×10–15', 75),
+    mk('Core (planks / cable crunch) — 3 sets', 60),
+  ]
+
+  const Cex = [
+    mk('Pull-ups or pulldown — 3×6–10', 120),
+    mk('DB shoulder press — 3×8–12', 120),
+    mk('Split squat — 3×8–12 per leg', 120),
+    mk('Chest-supported row — 3×10–12', 90),
+    mk('Arms finisher — 2–3 sets', 60),
+    mk('10 min easy cardio cooldown', null),
+  ]
+
+  const Rex = [
+    mk('8k–10k steps (easy pace)', null),
+    mk('10 min mobility (hips, ankles, shoulders)', null),
+    mk('Light stretching (5–10 min)', null),
+  ]
+
+  const toItems = (ex: WorkoutExerciseTemplate[]) => ex.map((x) => x.name)
+
+  return {
+    A: {
+      title: 'Workout A',
+      subtitle: 'Strength (Upper focus)',
+      exercises: Aex,
+      items: toItems(Aex),
+    },
+    B: {
+      title: 'Workout B',
+      subtitle: 'Strength (Lower focus)',
+      exercises: Bex,
+      items: toItems(Bex),
+    },
+    C: {
+      title: 'Workout C',
+      subtitle: 'Full body (Optional / lighter)',
+      exercises: Cex,
+      items: toItems(Cex),
+    },
+    REST: {
+      title: 'Rest day',
+      subtitle: 'Recovery / steps / mobility',
+      exercises: Rex,
+      items: toItems(Rex),
+    },
+  }
 }
 
 function defaultGrocery(): GroceryItem[] {
@@ -95,6 +223,7 @@ function defaultGrocery(): GroceryItem[] {
 function defaultData(): PlannerData {
   return {
     setupCompleted: false,
+
     profile: {
       name: '',
       age: null,
@@ -102,53 +231,63 @@ function defaultData(): PlannerData {
       startWeight: null,
       quoteTone: 'gentle',
     },
+
     goal: {
       enabled: false,
       targetWeight: null,
       weeks: null,
     },
+
+    workout: {
+      templates: defaultWorkoutTemplates(),
+      done: {},
+      logs: {},
+    },
+
     mealPlan: {
-      title: 'Meal plan (sempre uguale) ~1.800 kcal',
+      title: 'Meal plan (always the same) ~1,800 kcal',
       items: [
-        'Colazione: yogurt greco 0% 250 g + avena 30 g + 1 frutto.',
-        'Pranzo: pollo/tacchino 200 g (cotto) + riso 70 g (crudo) + verdure + olio 10 g.',
-        'Snack 16:30: whey 30 g OR yogurt greco 200 g.',
-        'Cena: pesce magro 250 g + patate 300 g (o pane 80 g) + verdure + olio 10 g.',
-        '2 giorni/sett: salmone 180-200 g (riduci i carbo).',
-        'Treat: max 200 kcal, solo post-cena.',
+        'Breakfast: 0% Greek yogurt 250 g + oats 30 g + 1 fruit.',
+        'Lunch: chicken/turkey 200 g (cooked) + rice 70 g (raw) + vegetables + olive oil 10 g.',
+        'Snack 16:30: whey 30 g OR 0% Greek yogurt 200 g.',
+        'Dinner: lean white fish 250 g + potatoes 300 g (or bread 80 g) + vegetables + olive oil 10 g.',
+        '2 days/week: salmon 180–200 g (reduce carbs).',
+        'Treat: max 200 kcal, only after dinner.',
       ],
       grocery: defaultGrocery(),
     },
+
     routine: {
       schedule: [
         {
           time: '07:00-07:30',
-          text: 'Luce fuori 10 min + acqua. Ultimo caffè entro le 14:00.',
+          text: 'Get outside light 10 min + water. Last coffee by 14:00.',
         },
-        { time: '08:00', text: 'Colazione fissa.' },
-        { time: '12:30', text: 'Snack pre-wo (banana o whey o yogurt).' },
-        { time: '13:00', text: 'Allenamento (2-3 giorni): A/B + C opzionale.' },
-        { time: '14:15', text: 'Pranzo fisso.' },
-        { time: '16:30-17:30', text: 'Snack proteico “blocco fame”.' },
-        { time: '19:00-20:00', text: 'Cena fissa (molta verdura).' },
+        { time: '08:00', text: 'Fixed breakfast.' },
         {
-          time: '22:30',
-          text: 'Shutdown: luci basse, niente scroll infinito.',
+          time: '12:30',
+          text: 'Pre-workout snack (banana or whey or yogurt).',
         },
+        { time: '13:00', text: 'Workout (2–3 days): A/B + optional C.' },
+        { time: '14:15', text: 'Fixed lunch.' },
+        { time: '16:30-17:30', text: 'Protein snack “hunger blocker”.' },
+        { time: '19:00-20:00', text: 'Fixed dinner (lots of veg).' },
+        { time: '22:30', text: 'Shutdown: dim lights, no endless scrolling.' },
       ],
       checklist: [
-        { id: 'morning_checkin', label: 'Inserisci peso + sleep + energy' },
-        { id: 'sunlight', label: 'Luce fuori 10 min' },
-        { id: 'breakfast', label: 'Colazione' },
-        { id: 'steps', label: '8.000-10.000 passi' },
-        { id: 'lunch', label: 'Pranzo' },
-        { id: 'snack', label: 'Snack proteico (16:30-17:30)' },
-        { id: 'workout', label: 'Allenamento (Mon/Wed/Fri)' },
-        { id: 'dinner', label: 'Cena' },
-        { id: 'shutdown', label: 'Shutdown alle 22:30' },
-        { id: 'treat', label: 'Treat solo post-cena (se serve)' },
+        { id: 'morning_checkin', label: 'Log weight + sleep + energy' },
+        { id: 'sunlight', label: 'Get outside light (10 min)' },
+        { id: 'breakfast', label: 'Breakfast' },
+        { id: 'steps', label: '8,000–10,000 steps' },
+        { id: 'lunch', label: 'Lunch' },
+        { id: 'snack', label: 'Protein snack (16:30–17:30)' },
+        { id: 'workout', label: 'Workout (Mon/Wed/Fri)' },
+        { id: 'dinner', label: 'Dinner' },
+        { id: 'shutdown', label: 'Shutdown at 22:30' },
+        { id: 'treat', label: 'Treat only after dinner (if needed)' },
       ],
     },
+
     daily: {},
   }
 }
@@ -223,7 +362,6 @@ function safeDate(v: unknown): string | null {
 }
 
 function weeksFromDeadline(deadline: string): number | null {
-  // Use midday to avoid DST edge cases
   const end = new Date(`${deadline}T12:00:00`)
   if (!Number.isFinite(end.getTime())) return null
   const start = new Date(`${isoDate(new Date())}T12:00:00`)
@@ -231,6 +369,57 @@ function weeksFromDeadline(deadline: string): number | null {
   if (!Number.isFinite(diffDays)) return null
   const w = Math.ceil(diffDays / 7)
   return w >= 1 ? w : null
+}
+
+function safeRestSeconds(v: unknown): number | null {
+  const n = intOrNull(v)
+  if (n == null) return null
+  return n >= 0 ? n : null
+}
+
+function normalizeWorkoutTemplate(
+  base: WorkoutTemplate,
+  incoming: any,
+): WorkoutTemplate {
+  // title/subtitle
+  if (typeof incoming.title === 'string') base.title = incoming.title
+  if (typeof incoming.subtitle === 'string') base.subtitle = incoming.subtitle
+
+  // 1) Try exercises (new)
+  if (Array.isArray(incoming.exercises)) {
+    const ex: WorkoutExerciseTemplate[] = incoming.exercises
+      .filter(isPlainObject)
+      .map(
+        (x: any): WorkoutExerciseTemplate => ({
+          id: typeof x.id === 'string' ? x.id : makeId(),
+          name: String(x.name ?? ''),
+          restSeconds: safeRestSeconds(x.restSeconds),
+        }),
+      )
+      .filter((e: WorkoutExerciseTemplate) => e.name.trim().length)
+
+    if (ex.length) {
+      base.exercises = ex
+      base.items = ex.map((e) => e.name) // keep in sync
+      return base
+    }
+  }
+
+  // 2) Fallback: items (legacy)
+  if (Array.isArray(incoming.items)) {
+    const items = incoming.items.filter((x: any) => typeof x === 'string')
+    if (items.length) {
+      base.items = items
+      base.exercises = items.map((name: string) => ({
+        id: makeId(),
+        name,
+        restSeconds: null,
+      }))
+      return base
+    }
+  }
+
+  return base
 }
 
 function safeLoadPlanner(raw: string): PlannerData | null {
@@ -267,6 +456,61 @@ function safeLoadPlanner(raw: string): PlannerData | null {
     if (base.goal.weeks == null) {
       const d = safeDate(g.deadline)
       if (d) base.goal.weeks = weeksFromDeadline(d)
+    }
+  }
+
+  // workout
+  if (isPlainObject((parsed as any).workout)) {
+    const w = (parsed as any).workout
+
+    // legacy done map
+    if (isPlainObject(w.done)) {
+      for (const [k, v] of Object.entries(w.done)) {
+        base.workout.done[String(k)] = !!v
+      }
+    }
+
+    // templates
+    if (isPlainObject(w.templates)) {
+      const keys: WorkoutKey[] = ['A', 'B', 'C', 'REST']
+      for (const key of keys) {
+        const t = (w.templates as any)[key]
+        if (!isPlainObject(t)) continue
+        base.workout.templates[key] = normalizeWorkoutTemplate(
+          base.workout.templates[key],
+          t,
+        )
+      }
+    }
+
+    // logs (new)
+    if (isPlainObject(w.logs)) {
+      for (const [dateKey, dayVal] of Object.entries(w.logs)) {
+        if (!isPlainObject(dayVal)) continue
+
+        const key = (dayVal as any).key
+        const wk: WorkoutKey =
+          key === 'A' || key === 'B' || key === 'C' || key === 'REST'
+            ? key
+            : workoutForDate(String(dateKey))
+
+        const exercises: Record<string, WorkoutExerciseLog> = {}
+
+        if (isPlainObject((dayVal as any).exercises)) {
+          for (const [exId, exLog] of Object.entries(
+            (dayVal as any).exercises,
+          )) {
+            if (!isPlainObject(exLog)) continue
+            exercises[String(exId)] = {
+              done: !!(exLog as any).done,
+              weight: numOrNull((exLog as any).weight),
+              reps: numOrNull((exLog as any).reps),
+            }
+          }
+        }
+
+        base.workout.logs[String(dateKey)] = { key: wk, exercises }
+      }
     }
   }
 
@@ -333,8 +577,9 @@ function safeLoadPlanner(raw: string): PlannerData | null {
 
       const checks: Record<string, boolean> = {}
       if (isPlainObject((entry as any).checks)) {
-        for (const [k, v] of Object.entries((entry as any).checks))
+        for (const [k, v] of Object.entries((entry as any).checks)) {
           checks[String(k)] = !!v
+        }
       }
 
       const energy = intOrNull((entry as any).energy)
@@ -402,6 +647,45 @@ function ensureToday(dateKey = today.value): DailyEntry {
   return data.value.daily[t]
 }
 
+/**
+ * Ensures a workout log exists for the date and includes all exercises
+ * currently present in the template for that day.
+ */
+function ensureWorkoutLog(dateKey = today.value): WorkoutDayLog {
+  const key = workoutForDate(dateKey)
+  const template = data.value.workout.templates[key]
+
+  if (!data.value.workout.logs[dateKey]) {
+    data.value.workout.logs[dateKey] = {
+      key,
+      exercises: {},
+    }
+  }
+
+  const log = data.value.workout.logs[dateKey]
+  log.key = key
+
+  // Ensure every exercise in template has a log row
+  for (const ex of template.exercises) {
+    if (!log.exercises[ex.id]) {
+      log.exercises[ex.id] = { done: false, weight: null, reps: null }
+    }
+  }
+
+  return log
+}
+
+function computeWorkoutDoneFromLog(dateKey = today.value): boolean {
+  const key = workoutForDate(dateKey)
+  const template = data.value.workout.templates[key]
+  const log = data.value.workout.logs[dateKey]
+  if (!log) return !!data.value.workout.done[dateKey]
+
+  // Consider "done" only if all template exercises are done.
+  if (!template.exercises.length) return !!data.value.workout.done[dateKey]
+  return template.exercises.every((ex) => !!log.exercises[ex.id]?.done)
+}
+
 let hasInitialized = false
 let hasSetupWatch = false
 
@@ -422,6 +706,22 @@ function initClientOnce() {
   }
 
   ensureToday(today.value)
+
+  // Make sure templates always have exercises (migration safety)
+  ;(['A', 'B', 'C', 'REST'] as WorkoutKey[]).forEach((k) => {
+    const t = data.value.workout.templates[k]
+    if (!Array.isArray(t.exercises) || !t.exercises.length) {
+      t.exercises = (t.items || []).map((name) => ({
+        id: makeId(),
+        name,
+        restSeconds: null,
+      }))
+    }
+    if (!Array.isArray(t.items) || !t.items.length) {
+      t.items = t.exercises.map((x) => x.name)
+    }
+  })
+
   persistPlanner(data.value)
 
   if (!hasSetupWatch) {
@@ -545,9 +845,11 @@ export function usePlanner() {
   function addMealItem(text = '') {
     data.value.mealPlan.items.push(text)
   }
+
   function updateMealItem(index: number, text: string) {
     data.value.mealPlan.items[index] = text
   }
+
   function removeMealItem(index: number) {
     data.value.mealPlan.items.splice(index, 1)
   }
@@ -581,6 +883,135 @@ export function usePlanner() {
       data.value.mealPlan.grocery = defaultGrocery()
     }
   }
+
+  /** ---------------- Workout (persisted) ---------------- */
+  const workoutTemplates = computed(() => data.value.workout.templates)
+
+  // Legacy "done", but if logs exist, derive completion from them.
+  function isWorkoutCompleted(dateKey = today.value) {
+    return computeWorkoutDoneFromLog(dateKey)
+  }
+
+  /**
+   * Toggle day completion:
+   * - If marking done: mark all exercises done (keeps weights/reps as-is).
+   * - If unmarking: set done=false for all exercises (keeps weights/reps as-is).
+   */
+  function toggleWorkoutCompleted(dateKey = today.value) {
+    const log = ensureWorkoutLog(dateKey)
+    const key = workoutForDate(dateKey)
+    const template = data.value.workout.templates[key]
+    const next = !computeWorkoutDoneFromLog(dateKey)
+
+    for (const ex of template.exercises) {
+      const row =
+        log.exercises[ex.id] ??
+        (log.exercises[ex.id] = { done: false, weight: null, reps: null })
+
+      row.done = next
+    }
+
+    data.value.workout.done[dateKey] = next
+  }
+
+  /** New: get today's workout key (A/B/C/REST) */
+  function getWorkoutKey(dateKey = today.value): WorkoutKey {
+    return workoutForDate(dateKey)
+  }
+
+  /** New: ensure + return per-exercise log for a date */
+  function getWorkoutLog(dateKey = today.value): WorkoutDayLog {
+    return ensureWorkoutLog(dateKey)
+  }
+
+  /** New: toggle a single exercise done */
+  function toggleWorkoutExerciseDone(dateKey: string, exerciseId: string) {
+    const log = ensureWorkoutLog(dateKey)
+    if (!log.exercises[exerciseId]) {
+      log.exercises[exerciseId] = { done: false, weight: null, reps: null }
+    }
+    log.exercises[exerciseId].done = !log.exercises[exerciseId].done
+
+    // keep legacy day done in sync (best-effort)
+    data.value.workout.done[dateKey] = computeWorkoutDoneFromLog(dateKey)
+  }
+
+  /** New: update a single exercise data (weight/reps) */
+  function updateWorkoutExercise(
+    dateKey: string,
+    exerciseId: string,
+    patch: Partial<Pick<WorkoutExerciseLog, 'weight' | 'reps'>>,
+  ) {
+    const log = ensureWorkoutLog(dateKey)
+    if (!log.exercises[exerciseId]) {
+      log.exercises[exerciseId] = { done: false, weight: null, reps: null }
+    }
+    if (patch.weight !== undefined)
+      log.exercises[exerciseId].weight = patch.weight
+    if (patch.reps !== undefined) log.exercises[exerciseId].reps = patch.reps
+  }
+
+  /**
+   * Template editing (kept compatible with existing UI)
+   * NOTE: we keep `items` in sync with `exercises`.
+   */
+  function updateWorkoutTemplate(
+    key: WorkoutKey,
+    patch: Partial<Pick<WorkoutTemplate, 'title' | 'subtitle'>>,
+  ) {
+    const t = data.value.workout.templates[key]
+    if (!t) return
+    if (patch.title !== undefined) t.title = patch.title
+    if (patch.subtitle !== undefined) t.subtitle = patch.subtitle
+  }
+
+  function updateWorkoutItem(key: WorkoutKey, index: number, value: string) {
+    const t = data.value.workout.templates[key]
+    if (!t) return
+
+    // ensure arrays
+    if (!Array.isArray(t.items)) t.items = []
+    if (!Array.isArray(t.exercises)) t.exercises = []
+
+    if (index < 0) return
+
+    // grow if needed
+    while (t.exercises.length <= index) {
+      t.exercises.push({ id: makeId(), name: 'New item', restSeconds: null })
+    }
+    while (t.items.length <= index) {
+      t.items.push(t.exercises[t.items.length]?.name ?? 'New item')
+    }
+
+    t.items[index] = value
+    const ex = t.exercises[index]
+    if (!ex) return
+    ex.name = value
+  }
+
+  function addWorkoutItem(key: WorkoutKey) {
+    const t = data.value.workout.templates[key]
+    if (!t) return
+    const ex: WorkoutExerciseTemplate = {
+      id: makeId(),
+      name: 'New item',
+      restSeconds: null,
+    }
+    t.exercises.push(ex)
+    t.items.push(ex.name)
+  }
+
+  function removeWorkoutItem(key: WorkoutKey, index: number) {
+    const t = data.value.workout.templates[key]
+    if (!t) return
+    if (index < 0) return
+    if (index >= t.exercises.length && index >= t.items.length) return
+
+    // Remove both (best-effort)
+    if (index >= 0 && index < t.exercises.length) t.exercises.splice(index, 1)
+    if (index >= 0 && index < t.items.length) t.items.splice(index, 1)
+  }
+  /** ----------------------------------------------------- */
 
   function exportJson() {
     return JSON.stringify(toRaw(data.value), null, 2)
@@ -631,6 +1062,21 @@ export function usePlanner() {
     addGroceryItem,
     updateGroceryItem,
     removeGroceryItem,
+
+    // workout (legacy + new)
+    workoutTemplates,
+    isWorkoutCompleted,
+    toggleWorkoutCompleted,
+    updateWorkoutTemplate,
+    updateWorkoutItem,
+    addWorkoutItem,
+    removeWorkoutItem,
+
+    // workout (new per-exercise)
+    getWorkoutKey,
+    getWorkoutLog,
+    toggleWorkoutExerciseDone,
+    updateWorkoutExercise,
 
     // backup
     exportJson,

@@ -115,7 +115,7 @@ function onGroceryPrice(id: string, raw: string) {
         <Button
           class="rounded-xl bg-neutral-100 px-4 py-2 text-sm font-semibold text-neutral-900"
           @click="emit('add')">
-          + Aggiungi riga
+          + Add row
         </Button>
       </div>
     </section>
@@ -123,28 +123,52 @@ function onGroceryPrice(id: string, raw: string) {
     <!-- ===================== Grocery ===================== -->
     <section
       class="rounded-2xl border border-neutral-800 bg-neutral-900/40 p-4">
-      <div class="mb-3 flex items-center justify-between gap-3">
-        <div>
-          <h3 class="text-base font-semibold text-neutral-100">
-            Lista della spesa (UK)
-          </h3>
-          <p class="text-sm text-neutral-400">
-            Prezzi indicativi: modificali con i tuoi prezzi reali. Totale
-            calcolato automaticamente.
-          </p>
+      <div class="mb-3 grid gap-3 sm:flex sm:items-start sm:justify-between">
+        <div class="min-w-0">
+          <div class="flex items-start justify-between gap-3 sm:block">
+            <div>
+              <h3 class="text-base font-semibold text-neutral-100">
+                Grocery list (UK)
+              </h3>
+              <p class="text-sm text-neutral-400">
+                Approx prices: edit them with your real prices. Total updates
+                automatically.
+              </p>
+            </div>
+
+            <!-- Mobile edit button (top-right) -->
+            <button
+              type="button"
+              class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition sm:hidden"
+              :class="
+                isGroceryEdit
+                  ? 'border-emerald-800 bg-emerald-900/30 hover:bg-emerald-900/60'
+                  : 'border-neutral-800 bg-neutral-900/30 hover:bg-neutral-900/60'
+              "
+              :aria-label="isGroceryEdit ? 'Done' : 'Edit'"
+              @click="isGroceryEdit = !isGroceryEdit">
+              <component
+                :size="16"
+                :is="isGroceryEdit ? Check : Pencil"
+                :class="
+                  isGroceryEdit ? 'text-emerald-400' : 'text-neutral-200'
+                " />
+            </button>
+          </div>
         </div>
 
-        <div class="flex items-center gap-3">
+        <div class="flex items-center justify-between gap-3 sm:justify-end">
           <div class="text-right">
-            <p class="text-xs text-neutral-400">Totale stimato</p>
-            <p class="text-lg font-semibold text-neutral-100">
+            <p class="text-xs text-neutral-400">Estimated total</p>
+            <p class="text-base font-semibold text-neutral-100 sm:text-lg">
               £{{ groceryTotal.toFixed(2) }}
             </p>
           </div>
 
+          <!-- Desktop/tablet edit button -->
           <button
             type="button"
-            class="inline-flex h-9 w-9 items-center justify-center rounded-xl border transition"
+            class="hidden h-9 w-9 items-center justify-center rounded-xl border transition sm:inline-flex"
             :class="
               isGroceryEdit
                 ? 'border-emerald-800 bg-emerald-900/30 hover:bg-emerald-900/60'
@@ -155,7 +179,9 @@ function onGroceryPrice(id: string, raw: string) {
             <component
               :size="16"
               :is="isGroceryEdit ? Check : Pencil"
-              class="text-neutral-200" />
+              :class="
+                isGroceryEdit ? 'text-emerald-400' : 'text-neutral-200'
+              " />
           </button>
         </div>
       </div>
@@ -186,7 +212,24 @@ function onGroceryPrice(id: string, raw: string) {
           </template>
 
           <template v-else>
-            <div class="grid gap-2 sm:grid-cols-12">
+            <!-- Mobile-first: show delete as a small icon button (consistent with the rest of the app) -->
+            <div class="flex items-center justify-between gap-3">
+              <p
+                class="text-xs font-semibold tracking-wide text-neutral-500 uppercase">
+                Edit item
+              </p>
+
+              <button
+                type="button"
+                class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-rose-800 bg-rose-900/30 transition hover:bg-rose-900/60"
+                aria-label="Remove"
+                title="Remove"
+                @click="emit('removeGrocery', row.id)">
+                <X :size="16" class="text-rose-200" />
+              </button>
+            </div>
+
+            <div class="mt-3 grid gap-3 sm:grid-cols-12">
               <div class="sm:col-span-6">
                 <p
                   class="mb-1 text-[11px] font-semibold tracking-wide text-neutral-500 uppercase">
@@ -211,7 +254,7 @@ function onGroceryPrice(id: string, raw: string) {
                 <input
                   class="w-full rounded-lg border border-neutral-700 bg-neutral-950/40 px-3 py-2 text-sm text-neutral-100 outline-none"
                   :value="row.qty"
-                  placeholder="es. 2 packs / 7 porzioni"
+                  placeholder="e.g. 2 packs / 7 portions"
                   @input="
                     onGroceryQty(
                       row.id,
@@ -239,12 +282,6 @@ function onGroceryPrice(id: string, raw: string) {
                   " />
               </div>
             </div>
-
-            <div class="mt-2 flex justify-end">
-              <Button @click="emit('removeGrocery', row.id)" title="Elimina">
-                ✕
-              </Button>
-            </div>
           </template>
         </div>
       </div>
@@ -253,13 +290,14 @@ function onGroceryPrice(id: string, raw: string) {
         <Button
           class="rounded-xl bg-neutral-100 px-4 py-2 text-sm font-semibold text-neutral-900"
           @click="emit('addGrocery')">
-          + Aggiungi item
+          + Add item
         </Button>
       </div>
 
       <p class="mt-3 text-xs text-neutral-500">
-        Nota: questa lista vive dentro
-        <span class="font-semibold">usePlanner</span> e finisce nel Backup JSON.
+        Note: this list lives inside
+        <span class="font-semibold">usePlanner</span> and is included in the
+        Backup JSON.
       </p>
     </section>
   </div>

@@ -45,6 +45,21 @@ const {
   addGroceryItem,
   updateGroceryItem,
   removeGroceryItem,
+
+  // workout
+  workoutTemplates,
+  isWorkoutCompleted,
+  toggleWorkoutCompleted,
+  updateWorkoutTemplate,
+  updateWorkoutItem,
+  addWorkoutItem,
+  removeWorkoutItem,
+  // workout helpers
+  getWorkoutLog,
+  toggleWorkoutExerciseDone,
+  updateWorkoutExercise,
+
+  // backup
   exportJson,
   importJson,
 } = usePlanner()
@@ -188,6 +203,18 @@ function onProfileSave(payload: {
   completeSetup(payload)
   tab.value = 'settings'
 }
+
+// --- Workout exercise handlers ---
+function onToggleWorkoutExercise(exerciseId: string) {
+  toggleWorkoutExerciseDone(today.value, exerciseId)
+}
+
+function onUpdateWorkoutExercise(
+  exerciseId: string,
+  patch: { weight?: number | null; reps?: number | null },
+) {
+  updateWorkoutExercise(today.value, exerciseId, patch)
+}
 </script>
 
 <template>
@@ -316,12 +343,19 @@ function onProfileSave(payload: {
             :profile="data.profile"
             :goal="data.goal" />
 
-          <section
+          <WorkoutView
             v-else-if="tab === 'workout'"
-            class="rounded-2xl border border-neutral-800 bg-neutral-900/40 p-4">
-            <p class="text-lg font-semibold text-neutral-100">Workout</p>
-            <p class="mt-1 text-sm text-neutral-400">Coming next.</p>
-          </section>
+            :today="today"
+            :isDone="isWorkoutCompleted(today)"
+            :templates="workoutTemplates"
+            :log="getWorkoutLog(today)"
+            @toggleDone="() => toggleWorkoutCompleted(today)"
+            @toggleExercise="onToggleWorkoutExercise"
+            @updateExercise="onUpdateWorkoutExercise"
+            @updateTemplate="updateWorkoutTemplate"
+            @updateItem="updateWorkoutItem"
+            @addItem="addWorkoutItem"
+            @removeItem="removeWorkoutItem" />
 
           <BackupPanel
             v-else
