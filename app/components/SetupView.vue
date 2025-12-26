@@ -290,7 +290,7 @@ function submit() {
 
     <p class="mt-3 text-xs text-slate-500">
       Nota: per ora salva tutto in locale (browser). In futuro possiamo
-      aggiungere validazioni sull'obiettivo e macro e altro.
+      aggiungere validazioni sull'obiettivo e macro.
     </p>
   </section>
 </template>
