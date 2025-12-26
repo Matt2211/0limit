@@ -24,10 +24,10 @@ const emit = defineEmits<{
 }>()
 
 const tabs = [
-  { key: 'today' as const, label: 'Today', Icon: Home },
-  { key: 'progress' as const, label: 'Progress', Icon: TrendingUp },
   { key: 'routine' as const, label: 'Routine', Icon: Clock },
   { key: 'meals' as const, label: 'Meals', Icon: UtensilsCrossed },
+  { key: 'today' as const, label: 'Today', Icon: Home },
+  { key: 'progress' as const, label: 'Progress', Icon: TrendingUp },
   { key: 'backup' as const, label: 'Backup', Icon: Database },
 ]
 

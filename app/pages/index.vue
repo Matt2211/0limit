@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { usePlanner } from '~/composables/usePlanner'
+
 definePageMeta({ ssr: false })
 
-const tab = ref<'today' | 'progress' | 'routine' | 'meals' | 'backup'>('today')
+type Tab = 'today' | 'progress' | 'routine' | 'meals' | 'backup'
+const tab = useState<Tab>('app_tab', () => 'today')
 
 const viewTick = ref(0)
-
 onMounted(() => {
   viewTick.value++
 })
@@ -30,11 +31,9 @@ const {
   addMealItem,
   updateMealItem,
   removeMealItem,
-
   addGroceryItem,
   updateGroceryItem,
   removeGroceryItem,
-
   exportJson,
   importJson,
 } = usePlanner()
@@ -101,17 +100,15 @@ function onSetEnergy(level: number | null) {
           @complete="completeSetup" />
 
         <template v-else>
-          <header class="just mb-6 flex flex-col gap-3">
-            <div class="flex flex-col">
-              <div>
-                <h1 class="text-2xl font-semibold">
-                  Planner di {{ data.profile.name || 'Matt' }}
-                </h1>
-                <p class="text-neutral-300">
-                  Oggi:
-                  <span class="font-medium text-neutral-100">{{ today }}</span>
-                </p>
-              </div>
+          <header class="mb-6 flex flex-col gap-3">
+            <div>
+              <h1 class="text-2xl font-semibold">
+                Planner di {{ data.profile.name || 'Matt' }}
+              </h1>
+              <p class="text-neutral-300">
+                Oggi:
+                <span class="font-medium text-neutral-100">{{ today }}</span>
+              </p>
             </div>
 
             <div
@@ -139,8 +136,8 @@ function onSetEnergy(level: number | null) {
           </header>
 
           <TodayView
-            :key="'today-' + viewTick"
             v-if="tab === 'today'"
+            :key="'today-' + viewTick"
             :today="today"
             :schedule="data.routine.schedule"
             :items="todayChecklist"
@@ -157,8 +154,8 @@ function onSetEnergy(level: number | null) {
             @toggleWaterGlass="toggleDailyWaterGlass" />
 
           <ProgressView
-            :key="'progress-' + viewTick"
             v-else-if="tab === 'progress'"
+            :key="'progress-' + viewTick"
             :daily="data.daily" />
 
           <RoutineChecklist
@@ -187,7 +184,6 @@ function onSetEnergy(level: number | null) {
             v-else
             :exportJson="exportJson"
             :importJson="importJson" />
-          <AppTabNav v-model="tab" />
         </template>
       </ClientOnly>
     </div>
