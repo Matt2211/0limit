@@ -4,10 +4,17 @@ import {
   TrendingUp,
   Clock,
   UtensilsCrossed,
-  Database,
+  Dumbbell,
 } from 'lucide-vue-next'
 
-type Tab = 'today' | 'progress' | 'routine' | 'meals' | 'backup'
+type Tab =
+  | 'today'
+  | 'progress'
+  | 'routine'
+  | 'meals'
+  | 'workout'
+  | 'settings'
+  | 'backup'
 
 const props = withDefaults(
   defineProps<{
@@ -28,7 +35,7 @@ const tabs = [
   { key: 'meals' as const, label: 'Meals', Icon: UtensilsCrossed },
   { key: 'today' as const, label: 'Today', Icon: Home },
   { key: 'progress' as const, label: 'Progress', Icon: TrendingUp },
-  { key: 'backup' as const, label: 'Backup', Icon: Database },
+  { key: 'workout' as const, label: 'Workout', Icon: Dumbbell },
 ]
 
 function pick(t: Tab) {
@@ -37,7 +44,6 @@ function pick(t: Tab) {
 </script>
 
 <template>
-  <!-- App-style bottom tab bar -->
   <nav
     class="fixed inset-x-0 bottom-0 z-50 border-t border-neutral-800 bg-neutral-950/90 backdrop-blur"
     style="padding-bottom: env(safe-area-inset-bottom)">

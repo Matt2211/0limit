@@ -1,4 +1,5 @@
 import { ref, computed, watch, toRaw } from 'vue'
+import type { QuoteTone } from '~/data/motivationQuotes'
 
 type RoutineRow = { time: string; text: string }
 type CheckItem = { id: string; label: string }
@@ -10,6 +11,7 @@ type Profile = {
   age: number | null
   sex: Sex
   startWeight: number | null
+  quoteTone: QuoteTone
 }
 
 type Goal = {
@@ -98,6 +100,7 @@ function defaultData(): PlannerData {
       age: null,
       sex: 'na',
       startWeight: null,
+      quoteTone: 'gentle',
     },
     goal: {
       enabled: false,
@@ -203,6 +206,10 @@ function safeSex(v: unknown): Sex {
   return v === 'male' || v === 'female' || v === 'other' ? v : 'na'
 }
 
+function safeQuoteTone(v: unknown): QuoteTone {
+  return v === 'tough' || v === 'gentle' ? v : 'gentle'
+}
+
 function safeWeeks(v: unknown): number | null {
   const n = intOrNull(v)
   if (n == null) return null
@@ -244,6 +251,7 @@ function safeLoadPlanner(raw: string): PlannerData | null {
     base.profile.age = numOrNull(p.age)
     base.profile.sex = safeSex(p.sex)
     base.profile.startWeight = numOrNull(p.startWeight)
+    base.profile.quoteTone = safeQuoteTone(p.quoteTone)
   }
 
   // goal
@@ -441,12 +449,14 @@ export function usePlanner() {
     goalEnabled: boolean
     targetWeight: number | null
     weeks: number | null
+    quoteTone: QuoteTone
   }) {
     data.value.profile = {
       name: payload.name,
       age: payload.age,
       sex: payload.sex,
       startWeight: payload.startWeight,
+      quoteTone: payload.quoteTone,
     }
 
     data.value.goal = {

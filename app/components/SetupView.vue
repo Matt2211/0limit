@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import type { QuoteTone } from '~/data/motivationQuotes'
+import { QUOTE_TONE_LABELS } from '~/data/motivationQuotes'
+
 type Sex = 'male' | 'female' | 'other' | 'na'
 
 type Profile = {
@@ -6,6 +9,7 @@ type Profile = {
   age: number | null
   sex: Sex
   startWeight: number | null
+  quoteTone: QuoteTone
 }
 
 type Goal = {
@@ -30,6 +34,7 @@ const emit = defineEmits<{
       goalEnabled: boolean
       targetWeight: number | null
       weeks: number | null
+      quoteTone: QuoteTone
     },
   ): void
 }>()
@@ -42,6 +47,7 @@ const startWeight = ref<string>(
   props.profile.startWeight != null ? String(props.profile.startWeight) : '',
 )
 const sex = ref<Sex>(props.profile.sex ?? 'na')
+const quoteTone = ref<QuoteTone>(props.profile.quoteTone ?? 'gentle')
 
 const goalEnabled = ref<boolean>(!!props.goal.enabled)
 const targetWeight = ref<string>(
@@ -59,6 +65,7 @@ watch(
     startWeight.value =
       props.profile.startWeight != null ? String(props.profile.startWeight) : ''
     sex.value = props.profile.sex ?? 'na'
+    quoteTone.value = props.profile.quoteTone ?? 'gentle'
 
     goalEnabled.value = !!props.goal.enabled
     targetWeight.value =
@@ -81,7 +88,7 @@ function numOrNull(raw: unknown): number | null {
 
 const canSubmit = computed(() => {
   if (!name.value.trim()) return false
-  if (sex.value === 'na') return false
+  // sex can be 'na' and is allowed now
   if (numOrNull(age.value) == null) return false
   if (numOrNull(startWeight.value) == null) return false
 
@@ -106,6 +113,7 @@ function submit() {
     goalEnabled: goalEnabled.value,
     targetWeight: goalEnabled.value ? numOrNull(targetWeight.value) : null,
     weeks: goalEnabled.value ? numOrNull(weeks.value) : null,
+    quoteTone: quoteTone.value,
   })
 }
 </script>
@@ -113,24 +121,24 @@ function submit() {
 <template>
   <section class="rounded-2xl border border-neutral-800 bg-neutral-900/40 p-5">
     <div class="mb-4">
-      <h2 class="text-xl font-semibold text-neutral-100">Setup iniziale</h2>
+      <h2 class="text-xl font-semibold text-neutral-100">Initial setup</h2>
       <p class="mt-1 text-sm text-neutral-300">
-        Compila questi dati una volta sola. Poi li potrai modificare più avanti.
+        Fill this in once. You can edit it later in Settings.
       </p>
     </div>
 
     <div class="grid gap-4 sm:grid-cols-2">
       <div class="sm:col-span-2">
-        <p class="text-xs tracking-wide text-neutral-400 uppercase">Nome</p>
+        <p class="text-xs tracking-wide text-neutral-400 uppercase">Name</p>
         <input
           v-model="name"
           class="mt-2 w-full rounded-lg border bg-neutral-950/40 px-3 py-2 text-sm text-neutral-100 outline-none"
           :class="name.trim() ? 'border-neutral-700' : 'border-rose-600'"
-          placeholder="es. Matt" />
+          placeholder="e.g. Matt" />
       </div>
 
       <div>
-        <p class="text-xs tracking-wide text-neutral-400 uppercase">Età</p>
+        <p class="text-xs tracking-wide text-neutral-400 uppercase">Age</p>
         <input
           v-model="age"
           type="number"
@@ -139,12 +147,12 @@ function submit() {
           :class="
             numOrNull(age) != null ? 'border-neutral-700' : 'border-rose-600'
           "
-          placeholder="es. 30" />
+          placeholder="e.g. 30" />
       </div>
 
       <div>
         <p class="text-xs tracking-wide text-neutral-400 uppercase">
-          Peso attuale (kg)
+          Current weight (kg)
         </p>
         <input
           v-model="startWeight"
@@ -157,11 +165,11 @@ function submit() {
               ? 'border-neutral-700'
               : 'border-rose-600'
           "
-          placeholder="es. 88.0" />
+          placeholder="e.g. 88.0" />
       </div>
 
       <div class="sm:col-span-2">
-        <p class="text-xs tracking-wide text-neutral-400 uppercase">Sesso</p>
+        <p class="text-xs tracking-wide text-neutral-400 uppercase">Sex</p>
         <div class="mt-2 flex flex-wrap gap-2">
           <button
             type="button"
@@ -172,7 +180,7 @@ function submit() {
                 : 'border-neutral-700 bg-neutral-950/40 hover:bg-neutral-900/40'
             "
             @click="sex = 'male'">
-            Uomo
+            Male
           </button>
           <button
             type="button"
@@ -183,7 +191,7 @@ function submit() {
                 : 'border-neutral-700 bg-neutral-950/40 hover:bg-neutral-900/40'
             "
             @click="sex = 'female'">
-            Donna
+            Female
           </button>
           <button
             type="button"
@@ -194,23 +202,76 @@ function submit() {
                 : 'border-neutral-700 bg-neutral-950/40 hover:bg-neutral-900/40'
             "
             @click="sex = 'other'">
-            Altro
+            Other
+          </button>
+          <button
+            type="button"
+            class="rounded-xl border px-3 py-2 text-sm"
+            :class="
+              sex === 'na'
+                ? 'border-neutral-300 bg-neutral-100/10'
+                : 'border-neutral-700 bg-neutral-950/40 hover:bg-neutral-900/40'
+            "
+            @click="sex = 'na'">
+            Prefer not
           </button>
         </div>
-        <p v-if="sex === 'na'" class="mt-2 text-xs text-rose-400">
-          Seleziona un'opzione per continuare.
-        </p>
+        <p class="mt-2 text-xs text-neutral-400">Optional.</p>
       </div>
 
+      <!-- Quote tone -->
+      <div class="sm:col-span-2">
+        <p class="text-xs tracking-wide text-neutral-400 uppercase">
+          Daily quote style
+        </p>
+
+        <div class="mt-2 grid gap-2 sm:grid-cols-2">
+          <button
+            type="button"
+            class="rounded-xl border px-4 py-3 text-left transition"
+            :class="
+              quoteTone === 'gentle'
+                ? 'border-neutral-300 bg-neutral-100/10'
+                : 'border-neutral-700 bg-neutral-950/40 hover:bg-neutral-900/40'
+            "
+            @click="quoteTone = 'gentle'">
+            <p class="text-sm font-semibold text-neutral-100">
+              {{ QUOTE_TONE_LABELS.gentle }}
+            </p>
+            <p class="mt-1 text-xs text-neutral-400">
+              Encouraging, calm, consistent.
+            </p>
+          </button>
+
+          <button
+            type="button"
+            class="rounded-xl border px-4 py-3 text-left transition"
+            :class="
+              quoteTone === 'tough'
+                ? 'border-neutral-300 bg-neutral-100/10'
+                : 'border-neutral-700 bg-neutral-950/40 hover:bg-neutral-900/40'
+            "
+            @click="quoteTone = 'tough'">
+            <p class="text-sm font-semibold text-neutral-100">
+              {{ QUOTE_TONE_LABELS.tough }}
+            </p>
+            <p class="mt-1 text-xs text-neutral-400">
+              Direct, no excuses, military vibe.
+            </p>
+          </button>
+        </div>
+      </div>
+
+      <!-- Goal -->
       <div
         class="rounded-xl border border-neutral-800 bg-neutral-950/30 p-4 sm:col-span-2">
         <div class="flex items-center justify-between gap-3">
           <div>
             <p class="text-sm font-semibold text-neutral-100">
-              Hai un obiettivo?
+              Do you have a goal?
             </p>
             <p class="text-xs text-neutral-400">
-              (Peso target + numero di settimane)
+              (Target weight + number of weeks)
             </p>
           </div>
           <div class="flex gap-2">
@@ -234,7 +295,7 @@ function submit() {
                   : 'border-neutral-700 bg-neutral-950/40 hover:bg-neutral-900/40'
               "
               @click="goalEnabled = true">
-              Sì
+              Yes
             </button>
           </div>
         </div>
@@ -242,7 +303,7 @@ function submit() {
         <div v-if="goalEnabled" class="mt-4 grid gap-4 sm:grid-cols-2">
           <div>
             <p class="text-xs tracking-wide text-neutral-400 uppercase">
-              Peso obiettivo (kg)
+              Target weight (kg)
             </p>
             <input
               v-model="targetWeight"
@@ -255,12 +316,12 @@ function submit() {
                   ? 'border-neutral-700'
                   : 'border-rose-600'
               "
-              placeholder="es. 76.0" />
+              placeholder="e.g. 76.0" />
           </div>
 
           <div>
             <p class="text-xs tracking-wide text-neutral-400 uppercase">
-              Settimane
+              Weeks
             </p>
             <input
               v-model="weeks"
@@ -273,7 +334,7 @@ function submit() {
                   ? 'border-neutral-700'
                   : 'border-rose-600'
               "
-              placeholder="es. 12" />
+              placeholder="e.g. 12" />
           </div>
         </div>
       </div>
@@ -289,8 +350,7 @@ function submit() {
     </div>
 
     <p class="mt-3 text-xs text-neutral-500">
-      Nota: per ora salva tutto in locale (browser). In futuro possiamo
-      aggiungere validazioni sull'obiettivo e macro.
+      Note: for now everything is saved locally in your browser.
     </p>
   </section>
 </template>

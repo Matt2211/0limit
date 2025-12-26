@@ -1,9 +1,19 @@
 <script setup lang="ts">
 import { usePlanner } from '~/composables/usePlanner'
+import { getDailyQuote } from '~/data/motivationQuotes'
 
 definePageMeta({ ssr: false })
 
-type Tab = 'today' | 'progress' | 'routine' | 'meals' | 'backup'
+type Tab =
+  | 'today'
+  | 'progress'
+  | 'routine'
+  | 'meals'
+  | 'workout'
+  | 'settings'
+  | 'backup'
+  | 'profile'
+
 const tab = useState<Tab>('app_tab', () => 'today')
 
 const viewTick = ref(0)
@@ -61,6 +71,11 @@ const nextHeaderAction = computed(() => {
   return next?.label ?? 'Tutto fatto ✅'
 })
 
+const dailyQuote = computed(() => {
+  const tone = data.value.profile.quoteTone || 'gentle'
+  return getDailyQuote(today.value, tone)
+})
+
 function onUpdateWeight(raw: string) {
   const v = raw.trim()
   if (!v) return setDailyWeight(null)
@@ -79,6 +94,24 @@ function onSetEnergy(level: number | null) {
   if (level === null) return setDailyEnergy(null)
   const clamped = Math.min(4, Math.max(1, Math.round(level)))
   setDailyEnergy(clamped)
+}
+
+function onProfileCancel() {
+  tab.value = 'settings'
+}
+
+function onProfileSave(payload: {
+  name: string
+  age: number | null
+  sex: 'male' | 'female' | 'other' | 'na'
+  startWeight: number | null
+  goalEnabled: boolean
+  targetWeight: number | null
+  weeks: number | null
+  quoteTone: 'gentle' | 'tough'
+}) {
+  completeSetup(payload)
+  tab.value = 'settings'
 }
 </script>
 
@@ -102,10 +135,15 @@ function onSetEnergy(level: number | null) {
         <template v-else>
           <header class="mb-6 flex flex-col gap-3">
             <div>
-              <h1 class="text-2xl font-semibold">
-                Planner di {{ data.profile.name || 'Matt' }}
-              </h1>
-              <p class="text-neutral-300">
+              <p class="text-xs tracking-wide text-neutral-400 uppercase">
+                Daily quote
+              </p>
+              <p
+                class="mt-1 text-2xl leading-snug font-semibold text-neutral-100">
+                “{{ dailyQuote }}”
+              </p>
+
+              <p class="mt-2 text-neutral-300">
                 Oggi:
                 <span class="font-medium text-neutral-100">{{ today }}</span>
               </p>
@@ -179,6 +217,25 @@ function onSetEnergy(level: number | null) {
             @addGrocery="addGroceryItem"
             @updateGrocery="updateGroceryItem"
             @removeGrocery="removeGroceryItem" />
+
+          <ProfileEditorView
+            v-else-if="tab === 'profile'"
+            :profile="data.profile"
+            :goal="data.goal"
+            @cancel="onProfileCancel"
+            @save="onProfileSave" />
+
+          <SettingsView
+            v-else-if="tab === 'settings'"
+            :profile="data.profile"
+            :goal="data.goal" />
+
+          <section
+            v-else-if="tab === 'workout'"
+            class="rounded-2xl border border-neutral-800 bg-neutral-900/40 p-4">
+            <p class="text-lg font-semibold text-neutral-100">Workout</p>
+            <p class="mt-1 text-sm text-neutral-400">Coming next.</p>
+          </section>
 
           <BackupPanel
             v-else

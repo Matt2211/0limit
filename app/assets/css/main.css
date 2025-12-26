@@ -142,7 +142,6 @@ html {
   p {
     @apply font-jet-brains-mono text-sm font-light tracking-wider;
     line-height: 150%;
-    color: var(--color-text-primary);
   }
 
   p.lead {

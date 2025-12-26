@@ -1,14 +1,24 @@
 <script setup lang="ts">
-import { Bell, Menu } from 'lucide-vue-next'
+import { Bell, User, Settings, Database } from 'lucide-vue-next'
 
-const emit = defineEmits<{
-  (e: 'openMenu'): void
-  (e: 'openNotifications'): void
-}>()
+type Tab =
+  | 'today'
+  | 'progress'
+  | 'routine'
+  | 'meals'
+  | 'workout'
+  | 'settings'
+  | 'backup'
+
+const tab = useState<Tab>('app_tab', () => 'today')
+
+function go(next: Tab, select: () => void) {
+  tab.value = next
+  select()
+}
 </script>
 
 <template>
-  <!-- App-style top bar -->
   <div
     class="sticky top-0 z-40 border-b border-neutral-800 bg-neutral-950/90 backdrop-blur"
     style="padding-top: env(safe-area-inset-top)">
@@ -19,23 +29,47 @@ const emit = defineEmits<{
           class="h-9 w-9 rounded-xl border border-neutral-800 bg-neutral-900/40"
           aria-label="Logo" />
 
-        <!-- Actions -->
         <div class="flex items-center gap-2">
+          <!-- Notifications (placeholder) -->
           <button
             type="button"
             class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-neutral-800 bg-neutral-900/30 transition hover:bg-neutral-900/60"
-            aria-label="Notifications"
-            @click="emit('openNotifications')">
+            aria-label="Notifications">
             <Bell class="h-5 w-5 text-neutral-200" />
           </button>
 
-          <button
-            type="button"
-            class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-neutral-800 bg-neutral-900/30 transition hover:bg-neutral-900/60"
-            aria-label="Menu"
-            @click="emit('openMenu')">
-            <Menu class="h-5 w-5 text-neutral-200" />
-          </button>
+          <!-- Profile dropdown -->
+          <DropdownMenu align="end" side="bottom" :offset="10">
+            <template #trigger="{ toggle, openMenu }">
+              <button
+                type="button"
+                class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-neutral-800 bg-neutral-900/30 transition hover:bg-neutral-900/60"
+                aria-label="Profile"
+                @click="toggle()"
+                @keydown.enter.prevent="openMenu()"
+                @keydown.space.prevent="openMenu()">
+                <User class="h-5 w-5 text-neutral-200" />
+              </button>
+            </template>
+
+            <template #default="{ select }">
+              <button
+                type="button"
+                class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-neutral-200 hover:bg-neutral-900/60"
+                @click="go('settings', select)">
+                <Settings class="h-4 w-4 text-neutral-300" />
+                <span class="font-semibold">Settings</span>
+              </button>
+
+              <button
+                type="button"
+                class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-neutral-200 hover:bg-neutral-900/60"
+                @click="go('backup', select)">
+                <Database class="h-4 w-4 text-neutral-300" />
+                <span class="font-semibold">Backup</span>
+              </button>
+            </template>
+          </DropdownMenu>
         </div>
       </div>
     </div>
