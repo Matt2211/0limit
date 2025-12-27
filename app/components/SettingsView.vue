@@ -8,6 +8,7 @@ type Profile = {
   age: number | null
   sex: Sex
   startWeight: number | null
+  heightCm: number | null
   quoteTone?: 'gentle' | 'tough'
 }
 
@@ -47,7 +48,7 @@ function toneLabel(t?: Profile['quoteTone']) {
 </script>
 
 <template>
-  <section class="rounded-2xl border border-neutral-800 bg-neutral-900/40 p-4">
+  <section>
     <div class="mb-3 flex items-center justify-between gap-2">
       <div class="flex items-center gap-x-1">
         <Settings class="h-5 w-5 text-neutral-300" />
@@ -64,11 +65,9 @@ function toneLabel(t?: Profile['quoteTone']) {
     </div>
 
     <div class="grid gap-3">
-      <div class="rounded-xl border border-neutral-800 bg-neutral-950/40 p-3">
+      <div class="rounded-xl bg-neutral-900/60 p-4">
         <div class="flex items-center justify-between gap-3">
-          <p class="text-xs tracking-wide text-neutral-400 uppercase">
-            Profile
-          </p>
+          <h3>Profile</h3>
         </div>
 
         <div class="mt-2 space-y-1 text-sm text-neutral-200">
@@ -91,26 +90,18 @@ function toneLabel(t?: Profile['quoteTone']) {
             </span>
             <span v-else>—</span>
           </p>
-        </div>
-      </div>
-
-      <div class="rounded-xl border border-neutral-800 bg-neutral-950/40 p-3">
-        <p class="text-xs tracking-wide text-neutral-400 uppercase">
-          Daily quote
-        </p>
-        <div class="mt-2 text-sm text-neutral-200">
           <p>
-            <span class="text-neutral-400">Style:</span>
-            {{ toneLabel(props.profile.quoteTone) }}
-          </p>
-          <p class="mt-2 text-xs text-neutral-500">
-            (For now it's set during Setup. We'll make it editable here next.)
+            <span class="text-neutral-400">Height:</span>
+            <span v-if="props.profile.heightCm != null">
+              {{ props.profile.heightCm }} cm
+            </span>
+            <span v-else>—</span>
           </p>
         </div>
       </div>
 
-      <div class="rounded-xl border border-neutral-800 bg-neutral-950/40 p-3">
-        <p class="text-xs tracking-wide text-neutral-400 uppercase">Goal</p>
+      <div class="rounded-xl bg-neutral-900/60 p-4">
+        <h3>Goal</h3>
         <div class="mt-2 text-sm text-neutral-200">
           <template v-if="props.goal.enabled">
             <p>
@@ -132,17 +123,21 @@ function toneLabel(t?: Profile['quoteTone']) {
           <template v-else>
             <p class="text-neutral-400">No goal set.</p>
           </template>
-
-          <div class="mt-3">
-            <button
-              type="button"
-              class="inline-flex items-center justify-center rounded-xl border border-neutral-800 bg-neutral-900/30 px-3 py-2 text-sm font-semibold text-neutral-200 hover:bg-neutral-900/60"
-              @click="tab = 'backup'">
-              Open Backup
-            </button>
-          </div>
         </div>
       </div>
+
+      <div class="rounded-xl bg-neutral-900/60 p-4">
+        <h3>Daily quote</h3>
+        <div class="mt-2 text-sm text-neutral-200">
+          <p>
+            <span class="text-neutral-400">Style:</span>
+            {{ toneLabel(props.profile.quoteTone) }}
+          </p>
+        </div>
+      </div>
+      <!-- <div class="mt-3">
+        <Button @click="tab = 'backup'"> Open Backup </Button>
+      </div> -->
     </div>
   </section>
 </template>

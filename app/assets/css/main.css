@@ -16,7 +16,7 @@ html {
   --color-bg-primary: #e4e2e4;
   --color-bg-secondary: #ffffff;
   --color-bg-inverted: #0030ff;
-  --color-bg-translucent: rgba(0, 0, 0, 0.03);
+  --color-bg-translucent: rgba(255, 255, 255, 0.05);
 
   /* Text */
   --color-text-primary: #0030ff;
@@ -116,9 +116,8 @@ html {
   }
 
   h3 {
-    @apply font-jet-brains-mono text-lg font-medium;
+    @apply font-jet-brains-mono text-xs tracking-wide text-neutral-400 uppercase;
     line-height: 120%;
-    color: var(--color-text-primary);
   }
 
   h4 {

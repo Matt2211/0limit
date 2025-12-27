@@ -259,7 +259,7 @@ function onUpdateWorkoutExercise(
       <ClientOnly>
         <template #fallback>
           <div
-            class="rounded-2xl border border-neutral-800 bg-neutral-900/40 p-4 text-neutral-300">
+            class="rounded-xl border border-neutral-800 bg-neutral-900/40 p-4 text-neutral-300">
             Loading…
           </div>
         </template>
@@ -272,18 +272,23 @@ function onUpdateWorkoutExercise(
 
         <template v-else>
           <header v-if="tab === 'today'" class="mb-4 flex flex-col gap-3">
-            <div class="flex items-start justify-between gap-3">
-              <h1
-                class="mt-1 text-2xl leading-snug font-semibold text-neutral-100">
-                “{{ dailyQuote }}”
-              </h1>
-
+            <div class="flex items-center justify-between">
+              <div>today</div>
               <button
                 type="button"
                 class="mt-1 inline-flex items-center gap-2 rounded-xl border border-neutral-800 bg-neutral-900/40 px-3 py-2 text-xs font-semibold text-neutral-200 hover:bg-neutral-900/70"
                 @click="reorderMode = !reorderMode">
                 {{ reorderMode ? 'Done' : 'Reorder' }}
               </button>
+            </div>
+
+            <div
+              v-if="!reorderMode"
+              class="flex items-start justify-between gap-3">
+              <h1
+                class="mt-1 text-2xl leading-snug font-semibold text-neutral-100">
+                “{{ dailyQuote }}”
+              </h1>
             </div>
           </header>
 
@@ -308,31 +313,22 @@ function onUpdateWorkoutExercise(
                   <!-- 1) Daily progress -->
                   <div
                     v-if="key === 'dailyProgress'"
-                    class="w-full rounded-2xl border border-neutral-800 bg-neutral-900/30 p-3">
+                    class="w-full rounded-xl bg-neutral-900/70 p-4">
                     <div
-                      class="mb-2 flex items-center justify-between text-xs text-neutral-400">
-                      <p
-                        class="flex items-center gap-2 text-xs tracking-wide text-neutral-400 uppercase">
-                        Daily progress
-                      </p>
-                      <span class="font-semibold text-neutral-200">
-                        {{ doneSteps }}/{{ totalSteps }} • {{ percent }}%
+                      class="mb-3 flex items-center justify-between text-xs text-neutral-400">
+                      <h3>Daily progress</h3>
+                      <span
+                        class="font-jet-brains-mono font-semibold text-neutral-200">
+                        {{ doneSteps }}/{{ totalSteps }} - {{ percent }}%
                       </span>
                     </div>
 
                     <div
-                      class="h-3 w-full overflow-hidden rounded-full bg-neutral-800">
+                      class="h-3 w-full overflow-hidden rounded bg-neutral-800">
                       <div
-                        class="h-full rounded-full bg-linear-to-r from-neutral-400 via-sky-400 to-violet-400 transition-all duration-500"
+                        class="h-full rounded bg-linear-to-r from-neutral-400 via-sky-400 to-violet-400 transition-all duration-500"
                         :style="{ width: percent + '%' }" />
                     </div>
-
-                    <p class="mt-2 text-xs text-neutral-400">
-                      Next up:
-                      <span class="text-neutral-200">{{
-                        nextHeaderAction
-                      }}</span>
-                    </p>
                   </div>
 
                   <!-- 2) Today panel -->
@@ -373,7 +369,7 @@ function onUpdateWorkoutExercise(
                   <!-- Fallback -->
                   <div
                     v-else
-                    class="rounded-2xl border border-neutral-800 bg-neutral-900/40 p-4 text-sm text-neutral-400">
+                    class="rounded-xl border border-neutral-800 bg-neutral-900/40 p-4 text-sm text-neutral-400">
                     Widget unavailable.
                   </div>
                 </div>
