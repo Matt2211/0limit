@@ -2,7 +2,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 // Base URL handling
 // - Dev (default): "/" (avoids Nuxt dev + router + SW issues)
-// - Prod subfolder deploy: set env `NUXT_APP_BASE_URL=/phoenix/` at build time
+// - Prod subfolder deploy: set env `NUXT_APP_BASE_URL=/0limit/` at build time
 const RAW_BASE = process.env.NUXT_APP_BASE_URL
 const BASE_URL = RAW_BASE
   ? RAW_BASE.endsWith('/')
@@ -23,7 +23,7 @@ export default defineNuxtConfig({
     // IMPORTANT: this is your real domain WITHOUT the subfolder
     // (the subfolder is handled by app.baseURL)
     url: 'https://matteofelicidesign.com',
-    name: 'phoenix',
+    name: '0limit',
     description: 'to add',
     defaultLocale: 'en',
   },
@@ -40,13 +40,13 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
   },
 
-  // ✅ App hosted under a subfolder (e.g. https://matteofelicidesign.com/phoenix)
+  // ✅ App hosted under a subfolder (e.g. https://matteofelicidesign.com/0limit)
   // In dev we keep it "/" unless you explicitly set NUXT_APP_BASE_URL.
   app: {
     baseURL: BASE_URL,
 
     head: {
-      titleTemplate: '%s | phoenix',
+      titleTemplate: '%s | 0limit',
 
       link: [
         // iOS “Add to Home Screen” icon
@@ -93,8 +93,8 @@ export default defineNuxtConfig({
 
     manifest: {
       id: BASE_URL,
-      name: 'Phoenix',
-      short_name: 'Phoenix',
+      name: '0limit',
+      short_name: '0limit',
       start_url: BASE_URL,
       scope: BASE_URL,
       display: 'standalone',
