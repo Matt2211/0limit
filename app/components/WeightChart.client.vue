@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import Chart from 'chart.js/auto'
 
 const props = withDefaults(
@@ -27,8 +27,11 @@ const props = withDefaults(
   },
 )
 
+const rootEl = ref<HTMLElement | null>(null)
 const canvasEl = ref<HTMLCanvasElement | null>(null)
+
 let chart: Chart | null = null
+let ro: ResizeObserver | null = null
 
 function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
   const h = String(hex ?? '')
@@ -62,12 +65,60 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
 function withAlpha(color: string, alpha: number): string {
   const c = String(color ?? '').trim()
   if (!c) return `rgba(52, 211, 153, ${alpha})`
+
   if (c.startsWith('#')) {
     const rgb = hexToRgb(c)
     if (rgb) return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`
   }
-  // If it's already rgb/rgba/hsl/etc, we leave it as-is.
+
+  const rgbMatch = c.match(
+    /^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/i,
+  )
+  if (rgbMatch) {
+    const r = Number(rgbMatch[1])
+    const g = Number(rgbMatch[2])
+    const b = Number(rgbMatch[3])
+    if ([r, g, b].every((n) => Number.isFinite(n))) {
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`
+    }
+  }
+
+  const rgbaMatch = c.match(
+    /^rgba\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*([0-9.]+)\s*\)$/i,
+  )
+  if (rgbaMatch) {
+    const r = Number(rgbaMatch[1])
+    const g = Number(rgbaMatch[2])
+    const b = Number(rgbaMatch[3])
+    if ([r, g, b].every((n) => Number.isFinite(n))) {
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`
+    }
+  }
+
   return c
+}
+
+function applyDatasetStyling(ds: any) {
+  ds.stepped = props.stepped
+  ds.borderColor = withAlpha(props.color, 1)
+  ds.pointBackgroundColor = withAlpha(props.color, 1)
+  ds.pointBorderColor = withAlpha(props.color, 1)
+
+  ds.backgroundColor =
+    props.type === 'bar'
+      ? withAlpha(props.color, props.fillAlpha)
+      : withAlpha(props.color, 0.15)
+
+  ds.borderWidth = props.type === 'bar' ? 0 : 2
+
+  if (props.type === 'bar') {
+    ds.borderRadius = 10
+    ds.maxBarThickness = 56
+    ds.categoryPercentage = 0.6
+    ds.barPercentage = 0.9
+  } else {
+    ds.borderRadius = 0
+  }
 }
 
 function buildChart() {
@@ -83,23 +134,18 @@ function buildChart() {
     data: {
       labels: props.labels,
       datasets: [
-        {
-          label: props.label ?? 'Value',
-          data: props.values,
-          tension: 0.35,
-          spanGaps: false,
-          pointRadius: 3,
-          pointHoverRadius: 5,
-          stepped: props.stepped,
-          borderColor: withAlpha(props.color, 1),
-          backgroundColor:
-            props.type === 'bar'
-              ? withAlpha(props.color, props.fillAlpha)
-              : withAlpha(props.color, 0.15),
-          pointBackgroundColor: withAlpha(props.color, 1),
-          pointBorderColor: withAlpha(props.color, 1),
-          borderWidth: props.type === 'bar' ? 0 : 2,
-        } as any,
+        (() => {
+          const ds: any = {
+            label: props.label ?? 'Value',
+            data: props.values,
+            tension: 0.35,
+            spanGaps: false,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+          }
+          applyDatasetStyling(ds)
+          return ds
+        })(),
       ],
     },
     options: {
@@ -118,14 +164,29 @@ function buildChart() {
           min: props.yMin,
           max: props.yMax,
           ticks: props.stepSize ? { stepSize: props.stepSize } : undefined,
-          grid: { color: 'rgba(148,163,184,0.15)' }, // neutral-ish
+          grid: { color: 'rgba(148,163,184,0.15)' },
         },
       },
     },
   })
+
+  requestAnimationFrame(() => {
+    if (chart) chart.resize()
+  })
 }
 
-onMounted(buildChart)
+onMounted(async () => {
+  await nextTick()
+  buildChart()
+
+  if (typeof window !== 'undefined' && 'ResizeObserver' in window) {
+    ro = new ResizeObserver(() => {
+      if (!chart) return
+      chart.resize()
+    })
+    if (rootEl.value) ro.observe(rootEl.value)
+  }
+})
 
 watch(
   () => [
@@ -140,7 +201,9 @@ watch(
     props.color,
     props.fillAlpha,
   ],
-  () => {
+  async () => {
+    await nextTick()
+
     if (!chart) return buildChart()
 
     chart.data.labels = props.labels
@@ -154,54 +217,34 @@ watch(
 
     ;(chart.config as any).type = props.type
 
-    const first = chart.data.datasets[0]
+    const first = chart.data.datasets[0] as any
     if (first) {
-      ;(first as any).data = props.values
-      ;(first as any).label = props.label ?? 'Value'
-      ;(first as any).stepped = props.stepped
-      ;(first as any).borderColor = withAlpha(props.color, 1)
-      ;(first as any).backgroundColor =
-        props.type === 'bar'
-          ? withAlpha(props.color, props.fillAlpha)
-          : withAlpha(props.color, 0.15)
-      ;(first as any).pointBackgroundColor = withAlpha(props.color, 1)
-      ;(first as any).pointBorderColor = withAlpha(props.color, 1)
-      ;(first as any).borderWidth = props.type === 'bar' ? 0 : 2
-    } else {
-      chart.data.datasets = [
-        {
-          label: props.label ?? 'Value',
-          data: props.values,
-          tension: 0.35,
-          spanGaps: false,
-          pointRadius: 3,
-          pointHoverRadius: 5,
-          stepped: props.stepped,
-          borderColor: withAlpha(props.color, 1),
-          backgroundColor:
-            props.type === 'bar'
-              ? withAlpha(props.color, props.fillAlpha)
-              : withAlpha(props.color, 0.15),
-          pointBackgroundColor: withAlpha(props.color, 1),
-          pointBorderColor: withAlpha(props.color, 1),
-          borderWidth: props.type === 'bar' ? 0 : 2,
-        } as any,
-      ]
+      first.data = props.values
+      first.label = props.label ?? 'Value'
+      applyDatasetStyling(first)
     }
 
     chart.update()
+
+    requestAnimationFrame(() => {
+      if (chart) chart.resize()
+    })
   },
   { deep: true },
 )
 
 onBeforeUnmount(() => {
+  if (ro) {
+    ro.disconnect()
+    ro = null
+  }
   if (chart) chart.destroy()
   chart = null
 })
 </script>
 
 <template>
-  <div class="h-64 w-full">
+  <div ref="rootEl" class="h-64 w-full">
     <canvas ref="canvasEl" />
   </div>
 </template>

@@ -191,7 +191,7 @@ const tableRows = computed(() => [...rows.value].reverse())
       <div>
         <h2 class="text-lg font-semibold text-neutral-100">Progress</h2>
         <p class="text-sm text-neutral-400">
-          4 grafici sempre visibili: Weight, Sleep, Energy, Water
+          Keep an eye on your progress over time.
         </p>
       </div>
 

@@ -139,32 +139,43 @@ const glassIndexes = computed(() =>
           </button>
         </div>
 
-        <div
-          v-if="nextItem"
-          class="mt-2 flex items-center justify-between gap-3">
-          <div class="flex items-center gap-2">
-            <p class="text-sm font-semibold text-neutral-100">
-              {{ nextItem.label }}
-            </p>
-            <span
-              v-if="hintForItem(nextItem.id)"
-              class="rounded-full border border-neutral-700 bg-neutral-950/40 px-2 py-0.5 text-[11px] font-semibold text-neutral-300">
-              {{ hintForItem(nextItem.id) }}
-            </span>
+        <Transition
+          mode="out-in"
+          :enter-active-class="'transition duration-200 ease-out'"
+          :enter-from-class="'opacity-0 -translate-y-1'"
+          :enter-to-class="'opacity-100 translate-y-0'"
+          :leave-active-class="'transition duration-150 ease-in'"
+          :leave-from-class="'opacity-100 translate-y-0'"
+          :leave-to-class="'opacity-0 translate-y-1'">
+          <div
+            v-if="nextItem"
+            :key="nextItem.id"
+            class="mt-2 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <p class="text-sm font-semibold text-neutral-100">
+                {{ nextItem.label }}
+              </p>
+              <span
+                v-if="hintForItem(nextItem.id)"
+                class="rounded-full border border-neutral-700 bg-neutral-950/40 px-2 py-0.5 text-[11px] font-semibold text-neutral-300">
+                {{ hintForItem(nextItem.id) }}
+              </span>
+            </div>
+
+            <input
+              type="checkbox"
+              class="h-4 w-4 cursor-pointer rounded-md border border-neutral-700 bg-neutral-950/40 accent-emerald-400"
+              :checked="!!checkedMap[nextItem.id]"
+              @change="toggleNext" />
           </div>
 
-          <!-- important: key = nextItem.id so checkbox doesn't reuse DOM state -->
-          <input
-            :key="nextItem.id"
-            type="checkbox"
-            class="h-5 w-5 accent-neutral-100"
-            :checked="!!checkedMap[nextItem.id]"
-            @change="toggleNext" />
-        </div>
-
-        <p v-else class="mt-2 text-sm font-semibold text-neutral-100">
-          All done ✅
-        </p>
+          <p
+            v-else
+            key="all-done"
+            class="mt-2 text-sm font-semibold text-neutral-100">
+            All done ✅
+          </p>
+        </Transition>
       </div>
 
       <!-- All steps -->
@@ -179,9 +190,14 @@ const glassIndexes = computed(() =>
           <label
             v-for="item in items"
             :key="item.id"
-            class="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-neutral-800 bg-neutral-950/40 p-3">
+            class="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-neutral-800 bg-neutral-950/40 p-3 transition-opacity"
+            :class="checkedMap[item.id] ? 'opacity-60' : 'opacity-100'">
             <div class="flex items-center gap-2">
-              <span class="text-sm text-neutral-200">{{ item.label }}</span>
+              <span
+                class="text-sm text-neutral-200"
+                :class="checkedMap[item.id] ? 'opacity-80' : 'opacity-100'">
+                {{ item.label }}
+              </span>
               <span
                 v-if="hintForItem(item.id)"
                 class="rounded-full border border-neutral-700 bg-neutral-950/40 px-2 py-0.5 text-[11px] font-semibold text-neutral-300">
@@ -191,7 +207,7 @@ const glassIndexes = computed(() =>
 
             <input
               type="checkbox"
-              class="h-5 w-5 accent-neutral-100"
+              class="h-4 w-4 cursor-pointer rounded-md border border-neutral-700 bg-neutral-950/40 accent-emerald-400"
               :checked="!!checkedMap[item.id]"
               @change="emit('toggle', item.id)" />
           </label>
